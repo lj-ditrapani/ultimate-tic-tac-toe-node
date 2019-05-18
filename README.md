@@ -2,6 +2,7 @@ Ultimate Tic-tac-toe Server
 ===========================
 
 LAN multiplayer Ultimate tic-tac-toe server in typescript on node.
+Websocket-based.
 
 
 Run it!
@@ -22,22 +23,6 @@ Game States
 - Turn
 - GameOver
 - Reset
-
-Endpoints:
-- GET /
-    - sets cookie id (determines player 1 vs player 2) & returns html
-- GET /js/file
-    - returns static javascript
-- GET /img/file
-    - returns static png files
-- GET /status
-    - returns status string
-- POST /play/index
-    - current player takes her turn; returns status string
-- POST /reset
-    - when in GameOver state, either player can request a new game
-- POST /accept-reset
-    - when in reset state; next state is Turn
 
 Status string: 10 lines of plain ASCII text.
 Lines are seperated by a Line Feed (0x0A).
