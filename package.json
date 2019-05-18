@@ -5,7 +5,15 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "fmt": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+    "fmt": "prettier --write \"src/**/*.ts\" *.json \"test/**/*.ts\"",
+    "fmt-check": "prettier --check \"src/**/*.ts\" *.json \"test/**/*.ts\"",
+    "tlint": "tslint --fix -c tslint.json 'src/**/*.ts' 'test/**/*.ts'",
+    "tlint-check": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'",
+    "lint": "npm run tlint && npm run fmt",
+    "lint-check": "npm run tlint-check && npm run fmt-check",
+    "tsc": "tsc",
+    "all-pipeline": "npm run lint-check && tsc && npm test",
+    "all": "npm run lint && tsc && npm test"
   },
   "author": "Jonathan Di Trapani",
   "license": "ISC",
