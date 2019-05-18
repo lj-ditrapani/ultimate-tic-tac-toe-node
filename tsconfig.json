@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "target": "es2017",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "removeComments": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "newLine": "lf"
+  },
+  "include": ["src/**/*"]
+}
