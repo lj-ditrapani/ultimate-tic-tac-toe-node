@@ -4,7 +4,8 @@
   "description": "ultimate-tic-tac-toe",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "nyc -e .ts mocha -r ts-node/register \"test/**/*_test.ts\"",
+    "test1": "mocha -r ts-node/register",
     "fmt": "prettier --write \"src/**/*.ts\" *.json \"test/**/*.ts\"",
     "fmt-check": "prettier --check \"src/**/*.ts\" *.json \"test/**/*.ts\"",
     "tlint": "tslint --fix -c tslint.json 'src/**/*.ts' 'test/**/*.ts'",
@@ -13,7 +14,22 @@
     "lint-check": "npm run tlint-check && npm run fmt-check",
     "tsc": "tsc",
     "all-pipeline": "npm run lint-check && tsc && npm test",
-    "all": "npm run lint && tsc && npm test"
+    "all": "npm run lint && tsc && npm run test"
+  },
+  "nyc": {
+    "check-coverage": true,
+    "per-file": true,
+    "statements": 97,
+    "branches": 97,
+    "functions": 97,
+    "lines": 97,
+    "require": [
+      "ts-node/register"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "test/**"
+    ]
   },
   "author": "Jonathan Di Trapani",
   "license": "ISC",
@@ -25,7 +41,13 @@
     "ws": "^7.0.0"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.6",
+    "@types/sinon": "^7.0.11",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
     "prettier": "^1.17.1",
+    "sinon": "^7.3.2",
+    "source-map-support": "^0.5.12",
     "tslint": "^5.16.0",
     "tslint-config-prettier": "^1.18.0"
   }
