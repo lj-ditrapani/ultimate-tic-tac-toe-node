@@ -8,13 +8,13 @@ export class Game {
 
   constructor(
     private readonly wss: Server,
-    private readonly connHandler: ConnectionHandler
+    private readonly connectionHandler: IConnectionHandler
   ) {}
 
   public listen() {
     this.wss.on('connection', ws => {
       const originalStatus = this.status
-      const event = this.connHandler(ws, this.status)
+      const event = this.connectionHandler.handle(ws, this.status)
       switch (event.eventType) {
         case 'spectatorJoined':
           this.spectators.push(event.spectator)
@@ -39,19 +39,20 @@ export class Game {
   }
 }
 
-export type ConnectionHandler = (ws: WebSocket, status: Status) => Event
+interface IConnectionHandler {
+  handle(ws: WebSocket, status: Status): Event
+}
 
-export const connectionHandler: ConnectionHandler = (
-  ws: WebSocket,
-  status: Status
-): Event => {
-  switch (status.statusType) {
-    case 'init':
-      return new NewStatus(new ReadyPlayer1(ws))
-    case 'readyPlayer1':
-      return new NewStatus(initialTurn(status.player1, ws))
-    default:
-      return new SpectatorJoined(ws)
+export class ConnectionHandler implements IConnectionHandler {
+  public handle(ws: WebSocket, status: Status): Event {
+    switch (status.statusType) {
+      case 'init':
+        return new NewStatus(new ReadyPlayer1(ws))
+      case 'readyPlayer1':
+        return new NewStatus(initialTurn(status.player1, ws))
+      default:
+        return new SpectatorJoined(ws)
+    }
   }
 }
 
