@@ -1,5 +1,6 @@
 import WebSocket, { Server } from 'ws'
-import { Event, init, NewStatus, ReadyPlayer1, SpectatorJoined, Status } from './models'
+import { Event, NewStatus, SpectatorJoined } from './models/event'
+import { init, ReadyPlayer1, Status } from './models/status'
 
 export class Game {
   public status: Status = init
