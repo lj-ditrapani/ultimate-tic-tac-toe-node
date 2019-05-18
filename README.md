@@ -74,4 +74,4 @@ They all have the same format.
 
 Finite State Machine:
 
-![doc/finite-state-machine.png](doc/finite-state-machine.png)
+![finite-state-machine.png](finite-state-machine.png)

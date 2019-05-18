@@ -3,6 +3,7 @@ import { init, Status } from './models'
 
 export class Game {
   public state: Status = init
+  public readonly spectators: WebSocket[] = []
 
   constructor(private readonly wss: Server) {}
 
