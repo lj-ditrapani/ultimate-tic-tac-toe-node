@@ -1,5 +1,4 @@
-import WebSocket from 'ws'
-import { Server } from 'ws'
+import WebSocket, { Server } from 'ws'
 import { Event, init, NewStatus, ReadyPlayer1, SpectatorJoined, Status } from './models'
 
 export class Game {
@@ -48,7 +47,7 @@ export const connectionHandler: ConnectionHandler = (
   switch (status.statusType) {
     case 'init':
       return new NewStatus(new ReadyPlayer1(ws))
-      /*
+    /*
     case 'readyPlayer1';
       return new NewStatus(initialTurn(status.player1, ws))
       */
