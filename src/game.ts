@@ -54,3 +54,5 @@ export const connectionHandler: ConnectionHandler = (
       return new SpectatorJoined(ws)
   }
 }
+
+export type MessageHandler = (message: string, ws: WebSocket, status: Status) => Status
