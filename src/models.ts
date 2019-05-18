@@ -1,3 +1,5 @@
+import WebSocket from 'ws'
+
 type ActiveBoard = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'A'
 
 type Player = WebSocket
@@ -23,19 +25,19 @@ class GameState {
 }
 
 class Init {
-  public readonly status: 'init' = 'init'
+  public readonly statusType: 'init' = 'init'
 }
 
 export const init = new Init()
 
 export class ReadyPlayer1 {
-  public readonly status: 'readyPlayer1' = 'readyPlayer1'
+  public readonly statusType: 'readyPlayer1' = 'readyPlayer1'
 
   constructor(public readonly player1: Player) {}
 }
 
 export class Turn {
-  public readonly status: 'turn' = 'turn'
+  public readonly statusType: 'turn' = 'turn'
 
   constructor(
     public readonly gameState: GameState,
@@ -45,7 +47,7 @@ export class Turn {
 }
 
 export class GameOver {
-  public readonly status: 'gameOver' = 'gameOver'
+  public readonly statusType: 'gameOver' = 'gameOver'
 
   constructor(
     public readonly gameState: GameState,
@@ -54,9 +56,23 @@ export class GameOver {
 }
 
 export class Reset {
-  public readonly status: 'reset' = 'reset'
+  public readonly statusType: 'reset' = 'reset'
 
   constructor(public readonly gameState: GameState, public readonly resetPlayr: 1 | 2) {}
 }
 
 export type Status = Init | ReadyPlayer1 | Turn | GameOver | Reset
+
+export class SpectatorJoined {
+  public readonly eventType = 'spectatorJoined'
+
+  constructor(public readonly spectator: WebSocket) {}
+}
+
+export class NewStatus {
+  public readonly eventType = 'newStatus'
+
+  constructor(public readonly status: Status) {}
+}
+
+export type Event = SpectatorJoined | NewStatus

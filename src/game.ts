@@ -1,19 +1,58 @@
+import WebSocket from 'ws'
 import { Server } from 'ws'
-import { init, Status } from './models'
+import { Event, init, NewStatus, ReadyPlayer1, SpectatorJoined, Status } from './models'
 
 export class Game {
-  public state: Status = init
+  public status: Status = init
   public readonly spectators: WebSocket[] = []
 
-  constructor(private readonly wss: Server) {}
+  constructor(
+    private readonly wss: Server,
+    private readonly connHandler: ConnectionHandler
+  ) {}
 
   public listen() {
     this.wss.on('connection', ws => {
-      ws.on('message', message => {
-        console.log('received: %s', message)
-      })
-
-      ws.send('Server: thank you for connecting')
+      const originalStatus = this.status
+      const event = this.connHandler(ws, this.status)
+      switch (event.eventType) {
+        case 'spectatorJoined':
+          this.spectators.push(event.spectator)
+          break
+        case 'newStatus':
+          this.status = event.status
+          break
+        default:
+          const exhaustiveCheck: never = event
+          throw new Error(exhaustiveCheck)
+      }
+      this.update(originalStatus)
     })
+  }
+
+  private update(originalStatus: Status): void {
+    if (originalStatus !== this.status) {
+      for (const spectator of this.spectators) {
+        spectator.send('new state here')
+      }
+    }
+  }
+}
+
+export type ConnectionHandler = (ws: WebSocket, status: Status) => Event
+
+export const connectionHandler: ConnectionHandler = (
+  ws: WebSocket,
+  status: Status
+): Event => {
+  switch (status.statusType) {
+    case 'init':
+      return new NewStatus(new ReadyPlayer1(ws))
+      /*
+    case 'readyPlayer1';
+      return new NewStatus(initialTurn(status.player1, ws))
+      */
+    default:
+      return new SpectatorJoined(ws)
   }
 }
