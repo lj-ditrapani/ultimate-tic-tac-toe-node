@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
-import { GameState } from './game_state'
+import { emptyGlobalBoard, GameState } from './game_state'
 
-type ActiveBoard = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'A'
+type ActiveBoard = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'all'
 
 class Init {
   public readonly statusType: 'init' = 'init'
@@ -20,9 +20,14 @@ export class Turn {
 
   constructor(
     public readonly gameState: GameState,
-    public readonly activePlayer: 1 | 2,
+    public readonly activePlayer: 'player1' | 'player2',
     public readonly activeBoard: ActiveBoard
   ) {}
+}
+
+export const initialTurn = (player1: WebSocket, player2: WebSocket): Turn => {
+  const gameState = new GameState(player1, player2, emptyGlobalBoard)
+  return new Turn(gameState, 'player1', 'all')
 }
 
 export class GameOver {

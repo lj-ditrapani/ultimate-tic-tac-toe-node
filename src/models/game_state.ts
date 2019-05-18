@@ -8,14 +8,20 @@ class LocalBoard {
   constructor(public readonly status: BoardStatus, public readonly cells: Cell[]) {}
 }
 
-class GlobalBoard {
-  constructor(public readonly localBoards: LocalBoard[]) {}
-}
-
 export class GameState {
   constructor(
     public readonly player1: WebSocket,
     public readonly player2: WebSocket,
-    public readonly globalBoard: GlobalBoard
+    public readonly globalBoard: LocalBoard[]
   ) {}
 }
+
+const emptyCell: 'empty' = 'empty'
+const emptyLocalBoard: LocalBoard = new LocalBoard(
+  'available',
+  Array.from(Array(9).keys()).map(_ => emptyCell)
+)
+
+export const emptyGlobalBoard: LocalBoard[] = Array.from(Array(9).keys()).map(
+  _ => emptyLocalBoard
+)

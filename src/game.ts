@@ -1,6 +1,6 @@
 import WebSocket, { Server } from 'ws'
 import { Event, NewStatus, SpectatorJoined } from './models/event'
-import { init, ReadyPlayer1, Status } from './models/status'
+import { init, initialTurn, ReadyPlayer1, Status } from './models/status'
 
 export class Game {
   public status: Status = init
@@ -48,10 +48,8 @@ export const connectionHandler: ConnectionHandler = (
   switch (status.statusType) {
     case 'init':
       return new NewStatus(new ReadyPlayer1(ws))
-    /*
-    case 'readyPlayer1';
+    case 'readyPlayer1':
       return new NewStatus(initialTurn(status.player1, ws))
-      */
     default:
       return new SpectatorJoined(ws)
   }
