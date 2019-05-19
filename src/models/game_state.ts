@@ -34,7 +34,7 @@ const cell2Char = (cell: Cell): string => {
   }
 }
 
-class LocalBoard {
+export class LocalBoard {
   constructor(public readonly status: BoardStatus, public readonly cells: Cell[]) {}
 
   public toString() {

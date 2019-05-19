@@ -1,5 +1,10 @@
 import WebSocket from 'ws'
-import { emptyGlobalBoard, emptyGlobalBoardString, GameState } from './game_state'
+import {
+  emptyGlobalBoard,
+  GameState,
+  globalBoardToString,
+  LocalBoard
+} from './game_state'
 
 type ActiveBoard = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'all'
 
@@ -10,7 +15,7 @@ class Init {
   public readonly statusType: 'init' = 'init'
 
   public toString() {
-    return 'INA\n' + emptyGlobalBoardString
+    return statusString('IN', 'all', emptyGlobalBoard)
   }
 }
 
@@ -22,7 +27,7 @@ export class ReadyPlayer1 {
   constructor(public readonly player1: WebSocket) {}
 
   public toString() {
-    return 'R1A\n' + emptyGlobalBoardString
+    return statusString('R1', 'all', emptyGlobalBoard)
   }
 }
 
@@ -48,12 +53,10 @@ export class Turn {
   ) {}
 
   public toString() {
-    return (
-      'T' +
-      player2Char(this.activePlayer) +
-      activeBoard2Char(this.activeBoard) +
-      '\n' +
-      this.gameState.toString()
+    return statusString(
+      'T' + player2Char(this.activePlayer),
+      this.activeBoard,
+      this.gameState.globalBoard
     )
   }
 }
@@ -72,7 +75,7 @@ export class GameOver {
   ) {}
 
   public toString() {
-    return 'G' + this.winner + 'A\n' + this.gameState.toString()
+    return statusString('G' + this.winner, 'all', this.gameState.globalBoard)
   }
 }
 
@@ -82,8 +85,14 @@ export class Reset {
   constructor(public readonly gameState: GameState, public readonly resetPlayer: 1 | 2) {}
 
   public toString() {
-    return 'S' + this.resetPlayer + 'A\n' + this.gameState.toString()
+    return statusString('S' + this.resetPlayer, 'all', this.gameState.globalBoard)
   }
 }
 
 export type Status = Init | ReadyPlayer1 | Turn | GameOver | Reset
+
+export const statusString = (
+  ss: string,
+  activeBoard: ActiveBoard,
+  globalBoard: LocalBoard[]
+): string => ss + activeBoard2Char(activeBoard) + '\n' + globalBoardToString(globalBoard)
