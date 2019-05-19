@@ -47,7 +47,7 @@ The first line is 4 characters and has the format SSPB.
 The other 9 lines each represent one of the 9 boards.
 They all have the same format.
 10 characters long with the format RCCCCCCCCC.
-- R: Board state
+- R: Board status
     - A: available
     - 1: player 1 won this board
     - 2: player 2 won this board
