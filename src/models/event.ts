@@ -10,7 +10,7 @@ export class SpectatorJoined {
 export class NewStatus {
   public readonly eventType = 'newStatus'
 
-  constructor(public readonly status: Status) {}
+  constructor(public readonly status: Status, public readonly ws: WebSocket) {}
 }
 
 export type Event = SpectatorJoined | NewStatus

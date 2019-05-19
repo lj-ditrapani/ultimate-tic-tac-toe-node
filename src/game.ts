@@ -7,17 +7,19 @@ export class Game {
   constructor(
     private readonly wss: Server,
     private readonly state: State,
-    private readonly connectionHandler: IConnectionHandler
+    private readonly connHandler: ConnectionHandler,
+    private readonly impureMessageHandler: ImpureMessageHandler
   ) {}
 
   public listen() {
     this.wss.on('connection', ws => {
-      const event = this.connectionHandler.handle(ws, this.state.getStatus())
+      const event = this.connHandler(ws, this.state.getStatus())
       switch (event.eventType) {
         case 'spectatorJoined':
           this.state.addSpectator(event.spectator)
           break
         case 'newStatus':
+          event.ws.on('message', this.impureMessageHandler)
           this.state.update(event.status)
           break
         default:
@@ -28,24 +30,16 @@ export class Game {
   }
 }
 
-interface IConnectionHandler {
-  handle(ws: WebSocket, status: Status): Event
-}
+type ConnectionHandler = (ws: WebSocket, status: Status) => Event
 
-export class ConnectionHandler implements IConnectionHandler {
-  constructor(private readonly impureMessageHandler: ImpureMessageHandler) {}
-
-  public handle(ws: WebSocket, status: Status): Event {
-    switch (status.statusType) {
-      case 'init':
-        ws.on('message', this.impureMessageHandler)
-        return new NewStatus(new ReadyPlayer1(ws))
-      case 'readyPlayer1':
-        ws.on('message', this.impureMessageHandler)
-        return new NewStatus(initialTurn(status.player1, ws))
-      default:
-        return new SpectatorJoined(ws)
-    }
+export const connectionHandler = (ws: WebSocket, status: Status): Event => {
+  switch (status.statusType) {
+    case 'init':
+      return new NewStatus(new ReadyPlayer1(ws), ws)
+    case 'readyPlayer1':
+      return new NewStatus(initialTurn(status.player1, ws), ws)
+    default:
+      return new SpectatorJoined(ws)
   }
 }
 
