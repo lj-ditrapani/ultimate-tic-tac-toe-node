@@ -7,19 +7,19 @@ export class Game {
   constructor(
     private readonly wss: Server,
     private readonly state: State,
-    private readonly connHandler: ConnectionHandler,
-    private readonly impureMessageHandler: ImpureMessageHandler
+    private readonly interpretConn: InterpretConnection,
+    private readonly messageHandler: MessageHandler
   ) {}
 
   public listen() {
     this.wss.on('connection', ws => {
-      const event = this.connHandler(ws, this.state.getStatus())
+      const event = this.interpretConn(ws, this.state.getStatus())
       switch (event.eventType) {
         case 'spectatorJoined':
           this.state.addSpectator(event.spectator)
           break
         case 'newStatus':
-          event.ws.on('message', this.impureMessageHandler)
+          event.ws.on('message', this.messageHandler)
           this.state.update(event.status)
           break
         default:
@@ -30,9 +30,9 @@ export class Game {
   }
 }
 
-type ConnectionHandler = (ws: WebSocket, status: Status) => Event
+type InterpretConnection = (ws: WebSocket, status: Status) => Event
 
-export const connectionHandler = (ws: WebSocket, status: Status): Event => {
+export const interpretConnection = (ws: WebSocket, status: Status): Event => {
   switch (status.statusType) {
     case 'init':
       return new NewStatus(new ReadyPlayer1(ws), ws)
@@ -43,23 +43,19 @@ export const connectionHandler = (ws: WebSocket, status: Status): Event => {
   }
 }
 
-export type ImpureMessageHandler = (ws: WebSocket, message: string) => void
+export type MessageHandler = (ws: WebSocket, message: string) => void
 
-export const impureMessageHandlerFactory = (
+export const messageHandlerFactory = (
   state: State,
-  mesgHandler: PureMessageHandler
-): ImpureMessageHandler => (ws: WebSocket, message: string): void => {
-  const newStatus = mesgHandler(message, ws, state.getStatus())
+  computeNextStatus: NextStatus
+): MessageHandler => (ws: WebSocket, message: string): void => {
+  const newStatus = computeNextStatus(message, ws, state.getStatus())
   state.update(newStatus)
 }
 
-export type PureMessageHandler = (
-  message: string,
-  ws: WebSocket,
-  status: Status
-) => Status
+export type NextStatus = (message: string, ws: WebSocket, status: Status) => Status
 
-export const messageHandler: PureMessageHandler = (
+export const nextStatus: NextStatus = (
   message: string,
   ws: WebSocket,
   status: Status
