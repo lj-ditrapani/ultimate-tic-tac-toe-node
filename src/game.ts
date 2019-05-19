@@ -33,14 +33,17 @@ interface IConnectionHandler {
 }
 
 export class ConnectionHandler implements IConnectionHandler {
-  constructor(private readonly mesgHandler: MessageHandler) {}
+  constructor(
+    private readonly state: State,
+    private readonly mesgHandler: MessageHandler
+  ) {}
 
   public handle(ws: WebSocket, status: Status): Event {
     switch (status.statusType) {
       case 'init':
         ws.on('message', (thisWs: WebSocket, message: string) => {
-          const newStatus = this.mesgHandler(message, thisWs, status)
-          console.log(newStatus)
+          const newStatus = this.mesgHandler(message, thisWs, this.state.getStatus())
+          this.state.update(newStatus)
         })
         return new NewStatus(new ReadyPlayer1(ws))
       case 'readyPlayer1':

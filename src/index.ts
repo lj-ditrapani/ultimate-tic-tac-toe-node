@@ -3,5 +3,6 @@ import { ConnectionHandler, Game, messageHandler } from './game'
 import { State } from './state'
 
 const wss: Server = new Server({ port: 47777 })
-
-new Game(wss, new State(), new ConnectionHandler(messageHandler)).listen()
+const state = new State()
+const connectionHandler = new ConnectionHandler(state, messageHandler)
+new Game(wss, state, connectionHandler).listen()
