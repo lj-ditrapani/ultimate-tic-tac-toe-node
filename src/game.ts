@@ -35,7 +35,7 @@ interface IConnectionHandler {
 export class ConnectionHandler implements IConnectionHandler {
   constructor(
     private readonly state: State,
-    private readonly mesgHandler: MessageHandler
+    private readonly mesgHandler: PureMessageHandler
   ) {}
 
   public handle(ws: WebSocket, status: Status): Event {
@@ -54,9 +54,23 @@ export class ConnectionHandler implements IConnectionHandler {
   }
 }
 
-export type MessageHandler = (message: string, ws: WebSocket, status: Status) => Status
+export type ImpureMessageHandler = (ws: WebSocket, message: string) => void
 
-export const messageHandler: MessageHandler = (
+export const impureMessageHandlerFactory = (
+  state: State,
+  mesgHandler: PureMessageHandler
+): ImpureMessageHandler => (ws: WebSocket, message: string): void => {
+  const newStatus = mesgHandler(message, ws, state.getStatus())
+  state.update(newStatus)
+}
+
+export type PureMessageHandler = (
+  message: string,
+  ws: WebSocket,
+  status: Status
+) => Status
+
+export const messageHandler: PureMessageHandler = (
   message: string,
   ws: WebSocket,
   status: Status
