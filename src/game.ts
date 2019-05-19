@@ -2,7 +2,7 @@ import WebSocket, { Server } from 'ws'
 import { Event, NewStatus, SpectatorJoined } from './models/event'
 import { initialTurn, ReadyPlayer1, Status } from './models/status'
 import { NextStatus } from './next_status'
-import { State } from './state'
+import { sendStatus, State } from './state'
 
 export class Game {
   constructor(
@@ -18,6 +18,7 @@ export class Game {
       switch (event.eventType) {
         case 'spectatorJoined':
           this.state.addSpectator(event.spectator)
+          sendStatus(event.spectator, this.state.getStatus())
           break
         case 'newStatus':
           event.ws.on('message', this.messageHandler)

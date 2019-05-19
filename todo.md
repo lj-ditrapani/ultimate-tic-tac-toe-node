@@ -1,5 +1,4 @@
-When spectator joins; needs to get current status
-
+toString or toResponse the status
 next turn logic
 
 multi-stage dockerfile
