@@ -14,6 +14,23 @@ export class State implements IState {
   public update(status: Status): void {
     if (status !== this.status) {
       this.status = status
+      switch (status.statusType) {
+        case 'init':
+          break
+        case 'readyPlayer1':
+          sendStatus(status.player1, status)
+          break
+        case 'turn':
+        case 'gameOver':
+        case 'reset':
+          const gameState = status.gameState
+          sendStatus(gameState.player1, status)
+          sendStatus(gameState.player2, status)
+          break
+        default:
+          const exhaustiveCheck: never = status
+          throw new Error(exhaustiveCheck)
+      }
       for (const spectator of this.spectators) {
         sendStatus(spectator, status)
       }
