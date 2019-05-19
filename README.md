@@ -17,7 +17,7 @@ npm start
 Notes
 -----
 
-Game States
+Game Status
 - Init
 - ReadyPlayer1
 - Turn
