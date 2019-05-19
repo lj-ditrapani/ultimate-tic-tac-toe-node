@@ -1,16 +1,15 @@
-import WebSocket from 'ws'
 import { Status } from './status'
 
-export class SpectatorJoined {
+class SpectatorJoined {
   public readonly eventType = 'spectatorJoined'
-
-  constructor(public readonly spectator: WebSocket) {}
 }
+
+export const spectatorJoined = new SpectatorJoined()
 
 export class NewStatus {
   public readonly eventType = 'newStatus'
 
-  constructor(public readonly status: Status, public readonly ws: WebSocket) {}
+  constructor(public readonly status: Status) {}
 }
 
 export type Event = SpectatorJoined | NewStatus

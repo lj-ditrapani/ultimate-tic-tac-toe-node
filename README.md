@@ -27,7 +27,11 @@ Game Status
 Status string: 10 lines of plain ASCII text.
 Lines are seperated by a Line Feed (0x0A).
 No trailing Line Feed.
-The first line is 4 characters and has the format SSPB.
+The first line is 4 characters and has the format PSSB.
+- P: Player
+    - 1: Player1
+    - 2: Player2
+    - S: Spectator
 - SS: Game state
     - IN: Init
     - R1: Ready player 1
@@ -38,10 +42,6 @@ The first line is 4 characters and has the format SSPB.
     - GT: GameOver; it's a tie
     - S1: Reset player 1
     - S2: Reset player 2
-- P: Player
-    - 1: Player1
-    - 2: Player2
-    - S: Spectator
 - B: Active board; a number between 1-9 inclusive or A for any.
 
 The other 9 lines each represent one of the 9 boards.

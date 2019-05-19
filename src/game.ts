@@ -1,5 +1,5 @@
 import WebSocket, { Server } from 'ws'
-import { Event, NewStatus, SpectatorJoined } from './models/event'
+import { Event, NewStatus, spectatorJoined } from './models/event'
 import { initialTurn, ReadyPlayer1, Status } from './models/status'
 import { NextStatus } from './next_status'
 import { sendStatus, State } from './state'
@@ -17,11 +17,11 @@ export class Game {
       const event = this.interpretConn(ws, this.state.getStatus())
       switch (event.eventType) {
         case 'spectatorJoined':
-          this.state.addSpectator(event.spectator)
-          sendStatus(event.spectator, this.state.getStatus())
+          this.state.addSpectator(ws)
+          sendStatus(ws, 'S', this.state.getStatus())
           break
         case 'newStatus':
-          event.ws.on('message', this.messageHandler)
+          ws.on('message', this.messageHandler)
           this.state.update(event.status)
           break
         default:
@@ -37,21 +37,12 @@ type InterpretConnection = (ws: WebSocket, status: Status) => Event
 export const interpretConnection = (ws: WebSocket, status: Status): Event => {
   switch (status.statusType) {
     case 'init':
-      sendEntity(ws, 'player1')
-      return new NewStatus(new ReadyPlayer1(ws), ws)
+      return new NewStatus(new ReadyPlayer1(ws))
     case 'readyPlayer1':
-      sendEntity(ws, 'player2')
-      return new NewStatus(initialTurn(status.player1, ws), ws)
+      return new NewStatus(initialTurn(status.player1, ws))
     default:
-      sendEntity(ws, 'spectator')
-      return new SpectatorJoined(ws)
+      return spectatorJoined
   }
-}
-
-type Entity = 'player1' | 'player2' | 'spectator'
-
-const sendEntity = (ws: WebSocket, entity: Entity): void => {
-  ws.send(`Entity: ${entity}`)
 }
 
 export type MessageHandler = (ws: WebSocket, message: string) => void

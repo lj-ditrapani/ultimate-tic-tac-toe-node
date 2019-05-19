@@ -18,21 +18,21 @@ export class State implements IState {
         case 'init':
           break
         case 'readyPlayer1':
-          sendStatus(status.player1, status)
+          sendStatus(status.player1, '1', status)
           break
         case 'turn':
         case 'gameOver':
         case 'reset':
           const gameState = status.gameState
-          sendStatus(gameState.player1, status)
-          sendStatus(gameState.player2, status)
+          sendStatus(gameState.player1, '1', status)
+          sendStatus(gameState.player2, '2', status)
           break
         default:
           const exhaustiveCheck: never = status
           throw new Error(exhaustiveCheck)
       }
       for (const spectator of this.spectators) {
-        sendStatus(spectator, status)
+        sendStatus(spectator, 'S', status)
       }
     }
   }
@@ -46,6 +46,8 @@ export class State implements IState {
   }
 }
 
-export const sendStatus = (ws: WebSocket, status: Status): void => {
-  ws.send(status.toString())
+type Entity = '1' | '2' | 'S'
+
+export const sendStatus = (ws: WebSocket, entity: Entity, status: Status): void => {
+  ws.send(entity + status.toString())
 }
