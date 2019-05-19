@@ -52,7 +52,7 @@ export class GameState {
   ) {}
 
   public toString() {
-    return this.globalBoard.map(board => board.toString()).join('\n')
+    return globalBoardToString(this.globalBoard)
   }
 }
 
@@ -65,3 +65,8 @@ const emptyLocalBoard: LocalBoard = new LocalBoard(
 export const emptyGlobalBoard: LocalBoard[] = Array.from(Array(9).keys()).map(
   _ => emptyLocalBoard
 )
+
+export const globalBoardToString = (globalBoard: LocalBoard[]): string =>
+  globalBoard.map(board => board.toString()).join('\n')
+
+export const emptyGlobalBoardString = globalBoardToString(emptyGlobalBoard)

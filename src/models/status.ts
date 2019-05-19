@@ -1,13 +1,16 @@
 import WebSocket from 'ws'
-import { emptyGlobalBoard, GameState } from './game_state'
+import { emptyGlobalBoard, emptyGlobalBoardString, GameState } from './game_state'
 
 type ActiveBoard = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'all'
+
+const activeBoard2Char = (activeBoard: ActiveBoard): string =>
+  activeBoard === 'all' ? 'A' : activeBoard.toString()
 
 class Init {
   public readonly statusType: 'init' = 'init'
 
   public toString() {
-    return 'IN'
+    return 'INA\n' + emptyGlobalBoardString
   }
 }
 
@@ -19,11 +22,11 @@ export class ReadyPlayer1 {
   constructor(public readonly player1: WebSocket) {}
 
   public toString() {
-    return 'R1'
+    return 'R1A\n' + emptyGlobalBoardString
   }
 }
 
-const player2String = (player: 'player1' | 'player2'): string => {
+const player2Char = (player: 'player1' | 'player2'): string => {
   switch (player) {
     case 'player1':
       return '1'
@@ -45,7 +48,13 @@ export class Turn {
   ) {}
 
   public toString() {
-    return 'T' + player2String(this.activePlayer)
+    return (
+      'T' +
+      player2Char(this.activePlayer) +
+      activeBoard2Char(this.activeBoard) +
+      '\n' +
+      this.gameState.toString()
+    )
   }
 }
 
@@ -61,12 +70,20 @@ export class GameOver {
     public readonly gameState: GameState,
     public readonly winner: 1 | 2 | 'T'
   ) {}
+
+  public toString() {
+    return 'G' + this.winner + 'A\n' + this.gameState.toString()
+  }
 }
 
 export class Reset {
   public readonly statusType: 'reset' = 'reset'
 
-  constructor(public readonly gameState: GameState, public readonly resetPlayr: 1 | 2) {}
+  constructor(public readonly gameState: GameState, public readonly resetPlayer: 1 | 2) {}
+
+  public toString() {
+    return 'S' + this.resetPlayer + 'A\n' + this.gameState.toString()
+  }
 }
 
 export type Status = Init | ReadyPlayer1 | Turn | GameOver | Reset
