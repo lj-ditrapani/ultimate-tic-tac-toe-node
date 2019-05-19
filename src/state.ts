@@ -12,7 +12,12 @@ export class State implements IState {
   private readonly spectators: WebSocket[] = []
 
   public update(status: Status): void {
-    this.status = status
+    if (status !== this.status) {
+      this.status = status
+      for (const spectator of this.spectators) {
+        sendStatus(spectator, status)
+      }
+    }
   }
 
   public getStatus(): Status {
@@ -22,4 +27,8 @@ export class State implements IState {
   public addSpectator(spectator: WebSocket): void {
     this.spectators.push(spectator)
   }
+}
+
+export const sendStatus = (ws: WebSocket, status: Status): void => {
+  ws.send(status.toString())
 }
