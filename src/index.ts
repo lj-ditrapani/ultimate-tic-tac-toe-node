@@ -1,5 +1,6 @@
 import { Server } from 'ws'
-import { Game, interpretConnection, messageHandlerFactory, nextStatus } from './game'
+import { Game, interpretConnection, messageHandlerFactory } from './game'
+import { nextStatus } from './next_status'
 import { State } from './state'
 
 const wss: Server = new Server({ port: 47777 })
