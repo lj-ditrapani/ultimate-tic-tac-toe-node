@@ -1,5 +1,3 @@
-- might need to split code to server and client folders
-
 Client
 - display status string
 - if p1 or p2, and your Turn
@@ -8,6 +6,8 @@ Client
 Server
 - next turn logic
 - tests
+
+shared folder?
 
 - publish to npm
 - multi-stage dockerfile

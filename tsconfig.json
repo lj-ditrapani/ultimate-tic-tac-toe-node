@@ -17,5 +17,5 @@
     "baseUrl": ".",
     "newLine": "lf"
   },
-  "include": ["src/**/*"]
+  "include": ["server/**/*", "client/**/*"]
 }
