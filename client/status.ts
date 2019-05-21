@@ -1,4 +1,4 @@
-type Cell = 'empty' | 'player1' | 'player2'
+export type Cell = 'empty' | 'player1' | 'player2'
 
 type BoardStatus = 'available' | 'player1Won' | 'player2Won' | 'tie'
 
@@ -8,44 +8,67 @@ export class LocalBoard {
 
 type ActiveBoard = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'all'
 
-class Init {
-  public readonly statusType: 'init' = 'init'
-}
+type StatusType = 'init' | 'readyPlayer1' | 'turn' | 'gameOver' | 'reset'
 
-export const init = new Init()
-
-class ReadyPlayer1 {
-  public readonly statusType: 'readyPlayer1' = 'readyPlayer1'
-}
-
-export const readyPlayer1 = new ReadyPlayer1()
-
-export class Turn {
-  public readonly statusType: 'turn' = 'turn'
+abstract class BaseStatus {
+  public abstract readonly statusType: StatusType
 
   constructor(
     public readonly globalBoard: LocalBoard[],
-    public readonly activePlayer: 'me' | 'other',
     public readonly activeBoard: ActiveBoard
   ) {}
 }
 
-export class GameOver {
+export class Init extends BaseStatus {
+  public readonly statusType: 'init' = 'init'
+
+  constructor(globalBoard: LocalBoard[], activeBoard: ActiveBoard) {
+    super(globalBoard, activeBoard)
+  }
+}
+
+export class ReadyPlayer1 extends BaseStatus {
+  public readonly statusType: 'readyPlayer1' = 'readyPlayer1'
+
+  constructor(globalBoard: LocalBoard[], activeBoard: ActiveBoard) {
+    super(globalBoard, activeBoard)
+  }
+}
+
+export class Turn extends BaseStatus {
+  public readonly statusType: 'turn' = 'turn'
+
+  constructor(
+    globalBoard: LocalBoard[],
+    activeBoard: ActiveBoard,
+    public readonly activePlayer: 'me' | 'other'
+  ) {
+    super(globalBoard, activeBoard)
+  }
+}
+
+export class GameOver extends BaseStatus {
   public readonly statusType: 'gameOver' = 'gameOver'
 
   constructor(
-    public readonly globalBoard: LocalBoard[],
+    globalBoard: LocalBoard[],
+    activeBoard: ActiveBoard,
     public readonly winner: 'me' | 'other' | 'T'
-  ) {}
+  ) {
+    super(globalBoard, activeBoard)
+  }
 }
 
-export class Reset {
+export class Reset extends BaseStatus {
   public readonly statusType: 'reset' = 'reset'
 
   constructor(
-    public readonly globalBoard: LocalBoard[],
+    globalBoard: LocalBoard[],
+    activeBoard: ActiveBoard,
     public readonly resetPlayer: 'me' | 'other'
-  ) {}
+  ) {
+    super(globalBoard, activeBoard)
+  }
 }
 
 export type Status = Init | ReadyPlayer1 | Turn | GameOver | Reset
