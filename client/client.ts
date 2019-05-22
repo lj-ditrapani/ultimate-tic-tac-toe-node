@@ -1,6 +1,6 @@
 import { colors, keyCodes, makeTermGrid } from 'term-grid-ui'
 import WebSocket from 'ws'
-import { parseStatusString } from './parse_status_string'
+import { parseStatusString } from './status'
 
 const ws = new WebSocket('ws://localhost:44777')
 const tg = makeTermGrid(13, 19)

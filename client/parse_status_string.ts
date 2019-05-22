@@ -1,20 +1,43 @@
 import { ActiveBoard, BoardStatus, Cell, LocalBoard } from './local_board'
-import { Init, Status } from './status'
 
-export const parseStatusString = (data: string): Status => {
-  const player = getPlayer(data)
-  console.log(player)
-  return new Init(data)
-}
+export type Entity = 'player1' | 'player2' | 'spectator'
 
-const getPlayer = (statusString: string): 'player1' | 'player2' => {
+export const getEntity = (statusString: string): Entity => {
   switch (statusString[0]) {
     case '1':
       return 'player1'
     case '2':
       return 'player2'
+    case 'S':
+      return 'spectator'
     default:
       throw new Error(`Invalid status string at postion 0: ${statusString}`)
+  }
+}
+
+export const getPlayer = (statusString: string): 'player1' | 'player2' => {
+  switch (statusString[2]) {
+    case '1':
+      return 'player1'
+    case '2':
+      return 'player2'
+    default:
+      throw new Error(`Invalid status string at postion 2: ${statusString}`)
+  }
+}
+
+export type Winner = 'player1' | 'player2' | 'tie'
+
+export const getWinner = (statusString: string): Winner => {
+  switch (statusString[2]) {
+    case '1':
+      return 'player1'
+    case '2':
+      return 'player2'
+    case 'T':
+      return 'tie'
+    default:
+      throw new Error(`Invalid status string at postion 2: ${statusString}`)
   }
 }
 
