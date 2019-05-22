@@ -78,8 +78,8 @@ export const parseBoard = (boardString: string): LocalBoard => {
   return new LocalBoard(boardStatus, cells)
 }
 
-const parseBoardStatus = (boardStatusChar: string): BoardStatus => {
-  switch (boardStatusChar) {
+const parseBoardStatus = (boardString: string): BoardStatus => {
+  switch (boardString[0]) {
     case 'A':
       return 'available'
     case '1':
@@ -89,7 +89,7 @@ const parseBoardStatus = (boardStatusChar: string): BoardStatus => {
     case 'T':
       return 'tie'
     default:
-      throw new Error(`Bad boardStatus char: ${boardStatusChar}`)
+      throw new Error(`Bad boardStatus char: ${boardString}`)
   }
 }
 

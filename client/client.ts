@@ -19,9 +19,14 @@ tg.onInput(data => {
 })
 
 ws.on('message', data => {
-  console.log(data)
   const status = parseStatusString(data.toString())
-  console.log(status)
+  for (const localBoard of status.globalBoard) {
+    console.log(localBoard.status)
+    console.log(localBoard.cells)
+  }
+  console.log(status.statusType)
+  console.log(status.me)
+  console.log(status.activeBoard)
 })
 
 ws.on('close', () => {
