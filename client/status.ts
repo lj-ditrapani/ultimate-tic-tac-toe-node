@@ -1,73 +1,62 @@
-export type Cell = 'empty' | 'player1' | 'player2'
-
-type BoardStatus = 'available' | 'player1Won' | 'player2Won' | 'tie'
-
-export class LocalBoard {
-  constructor(public readonly status: BoardStatus, public readonly cells: Cell[]) {}
-}
-
-type ActiveBoard = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'all'
-
-type StatusType = 'init' | 'readyPlayer1' | 'turn' | 'gameOver' | 'reset'
+import { ActiveBoard, LocalBoard } from './local_board'
+import { parseActiveBoard, parseBoard } from './parse_status_string'
 
 abstract class BaseStatus {
-  public abstract readonly statusType: StatusType
+  public readonly globalBoard: LocalBoard[]
+  public readonly activeBoard: ActiveBoard
 
-  constructor(
-    public readonly globalBoard: LocalBoard[],
-    public readonly activeBoard: ActiveBoard
-  ) {}
+  constructor(statusString: string) {
+    this.activeBoard = parseActiveBoard(statusString)
+    this.globalBoard = statusString
+      .slice(5)
+      .split('\n')
+      .map(boardString => parseBoard(boardString))
+  }
 }
 
 export class Init extends BaseStatus {
   public readonly statusType: 'init' = 'init'
 
-  constructor(globalBoard: LocalBoard[], activeBoard: ActiveBoard) {
-    super(globalBoard, activeBoard)
+  constructor(statusString: string) {
+    super(statusString)
   }
 }
 
 export class ReadyPlayer1 extends BaseStatus {
   public readonly statusType: 'readyPlayer1' = 'readyPlayer1'
 
-  constructor(globalBoard: LocalBoard[], activeBoard: ActiveBoard) {
-    super(globalBoard, activeBoard)
+  constructor(statusString: string) {
+    super(statusString)
   }
 }
 
 export class Turn extends BaseStatus {
   public readonly statusType: 'turn' = 'turn'
+  public readonly activePlayer: 'me' | 'other'
 
-  constructor(
-    globalBoard: LocalBoard[],
-    activeBoard: ActiveBoard,
-    public readonly activePlayer: 'me' | 'other'
-  ) {
-    super(globalBoard, activeBoard)
+  constructor(statusString: string) {
+    super(statusString)
+    this.activePlayer = 'me'
   }
 }
 
 export class GameOver extends BaseStatus {
   public readonly statusType: 'gameOver' = 'gameOver'
+  public readonly winner: 'me' | 'other' | 'T'
 
-  constructor(
-    globalBoard: LocalBoard[],
-    activeBoard: ActiveBoard,
-    public readonly winner: 'me' | 'other' | 'T'
-  ) {
-    super(globalBoard, activeBoard)
+  constructor(statusString: string) {
+    super(statusString)
+    this.winner = 'me'
   }
 }
 
 export class Reset extends BaseStatus {
   public readonly statusType: 'reset' = 'reset'
+  public readonly resetPlayer: 'me' | 'other'
 
-  constructor(
-    globalBoard: LocalBoard[],
-    activeBoard: ActiveBoard,
-    public readonly resetPlayer: 'me' | 'other'
-  ) {
-    super(globalBoard, activeBoard)
+  constructor(statusString: string) {
+    super(statusString)
+    this.resetPlayer = 'me'
   }
 }
 
