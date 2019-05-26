@@ -2,7 +2,9 @@ import { colors, keyCodes, makeTermGrid } from 'term-grid-ui'
 import WebSocket from 'ws'
 import { parseStatusString } from './status'
 
-const ws = new WebSocket('ws://localhost:44777')
+const arg1 = process.argv[2]
+const host = arg1 === undefined ? 'localhost' : arg1
+const ws = new WebSocket(`ws://${host}:44777`)
 const tg = makeTermGrid(13, 19)
 tg.clear()
 
