@@ -13,4 +13,5 @@ from node:${nodeV}-bullseye-slim as release
 copy package.json package-lock.json ./
 COPY --from=build dist/ dist/
 run npm install --omit=dev
-CMD ["npm", "start"]
+ENTRYPOINT ["npm", "run"]
+CMD ["client"]

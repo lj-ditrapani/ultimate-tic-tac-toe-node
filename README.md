@@ -14,8 +14,8 @@ Docker
 ------
 
     sh docker-build.sh
-    mode=server sh docker-run.sh
-    mode=client host=localhost sh docker-run.sh
+    sh docker-run.sh server
+    host=localhost sh docker-run.sh
 
 
 Develop
@@ -33,9 +33,17 @@ Install npm packages.
     npm install
 
 
+### Config ###
+
+The server does not need config, but the client does.
+You need to set the `host` environment variable to the host name or ip address of the server.
+You can use the .env [https://www.npmjs.com/package/dotenv](dotenv) file to set it.
+
+
 ### Run ###
 
-    npm start
+    npm run server
+    npm run client
 
 
 ### Run during dev ###
@@ -43,7 +51,8 @@ Install npm packages.
 While developing, you can skip building by using tsnode.
 You still need to setup your config as described above.
 
-    npm run dev
+    npm run server-dev
+    npm run client-dev
 
 
 ### Format, lint, build, test ###
