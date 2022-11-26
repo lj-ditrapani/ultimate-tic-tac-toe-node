@@ -7,11 +7,9 @@ import { z } from 'zod'
 // play
 
 const t = initTRPC.create()
-const router = t.router
-const publicProcedure = t.procedure
 
-const appRouter = router({
-  greeting: publicProcedure.input(z.object({ name: z.string() })).query((req) => {
+const appRouter = t.router({
+  greeting: t.procedure.input(z.object({ name: z.string() })).query((req) => {
     const { input } = req
     return {
       text: `Hello ${input.name}` as const,
@@ -21,8 +19,4 @@ const appRouter = router({
 
 export type AppRouter = typeof appRouter
 
-const { listen } = createHTTPServer({
-  router: appRouter,
-})
-// The API will now be listening on port 3000!
-listen(3000)
+createHTTPServer({ router: appRouter }).listen(3000)

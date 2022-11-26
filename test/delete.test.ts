@@ -3,6 +3,6 @@ import { describe, it } from '@jest/globals'
 
 describe('delete me', () => {
   it('fails, delete it', () => {
-    assert(0)
+    assert(1)
   })
 })
