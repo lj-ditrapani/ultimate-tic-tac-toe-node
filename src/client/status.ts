@@ -6,7 +6,7 @@ import {
   getWinner,
   parseActiveBoard,
   parseBoard,
-  Winner
+  Winner,
 } from './parse_status_string'
 
 abstract class BaseStatus {
@@ -20,7 +20,7 @@ abstract class BaseStatus {
     this.globalBoard = statusString
       .slice(5)
       .split('\n')
-      .map(boardString => parseBoard(boardString))
+      .map((boardString) => parseBoard(boardString))
   }
 }
 
@@ -77,7 +77,7 @@ export const parseStatusString = (statusString: string): Status => {
     throw new Error(
       'Bad statusString; incorrect length.  ' +
         `Length ${statusString.length}, ` +
-        `statusString: ${statusString}`
+        `statusString: ${statusString}`,
     )
   }
   switch (statusString[1]) {

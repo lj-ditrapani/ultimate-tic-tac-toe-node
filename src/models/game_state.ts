@@ -39,7 +39,7 @@ export class LocalBoard {
 
   public toString() {
     return (
-      boardStatus2Char(this.status) + this.cells.map(cell => cell2Char(cell)).join('')
+      boardStatus2Char(this.status) + this.cells.map((cell) => cell2Char(cell)).join('')
     )
   }
 }
@@ -48,7 +48,7 @@ export class GameState {
   constructor(
     public readonly player1: WebSocket,
     public readonly player2: WebSocket,
-    public readonly globalBoard: LocalBoard[]
+    public readonly globalBoard: LocalBoard[],
   ) {}
 
   public toString() {
@@ -59,14 +59,14 @@ export class GameState {
 const emptyCell: 'empty' = 'empty'
 const emptyLocalBoard: LocalBoard = new LocalBoard(
   'available',
-  Array.from(Array(9).keys()).map(_ => emptyCell)
+  Array.from(Array(9).keys()).map((_) => emptyCell),
 )
 
 export const emptyGlobalBoard: LocalBoard[] = Array.from(Array(9).keys()).map(
-  _ => emptyLocalBoard
+  (_) => emptyLocalBoard,
 )
 
 export const globalBoardToString = (globalBoard: LocalBoard[]): string =>
-  globalBoard.map(board => board.toString()).join('\n')
+  globalBoard.map((board) => board.toString()).join('\n')
 
 export const emptyGlobalBoardString = globalBoardToString(emptyGlobalBoard)

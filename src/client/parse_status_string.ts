@@ -71,10 +71,7 @@ export const parseActiveBoard = (statusString: string): ActiveBoard => {
 
 export const parseBoard = (boardString: string): LocalBoard => {
   const boardStatus = parseBoardStatus(boardString)
-  const cells = boardString
-    .slice(1)
-    .split('')
-    .map(parseCell)
+  const cells = boardString.slice(1).split('').map(parseCell)
   return new LocalBoard(boardStatus, cells)
 }
 

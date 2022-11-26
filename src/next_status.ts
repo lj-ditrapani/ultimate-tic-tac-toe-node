@@ -6,7 +6,7 @@ export type NextStatus = (message: string, ws: WebSocket, status: Status) => Sta
 export const nextStatus: NextStatus = (
   message: string,
   ws: WebSocket,
-  status: Status
+  status: Status,
 ): Status => {
   switch (status.statusType) {
     case 'turn':

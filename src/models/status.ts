@@ -3,7 +3,7 @@ import {
   emptyGlobalBoard,
   GameState,
   globalBoardToString,
-  LocalBoard
+  LocalBoard,
 } from './game_state'
 
 type ActiveBoard = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'all'
@@ -49,14 +49,14 @@ export class Turn {
   constructor(
     public readonly gameState: GameState,
     public readonly activePlayer: 'player1' | 'player2',
-    public readonly activeBoard: ActiveBoard
+    public readonly activeBoard: ActiveBoard,
   ) {}
 
   public toString() {
     return statusString(
       'T' + player2Char(this.activePlayer),
       this.activeBoard,
-      this.gameState.globalBoard
+      this.gameState.globalBoard,
     )
   }
 }
@@ -71,7 +71,7 @@ export class GameOver {
 
   constructor(
     public readonly gameState: GameState,
-    public readonly winner: 1 | 2 | 'T'
+    public readonly winner: 1 | 2 | 'T',
   ) {}
 
   public toString() {
@@ -94,5 +94,5 @@ export type Status = Init | ReadyPlayer1 | Turn | GameOver | Reset
 export const statusString = (
   ss: string,
   activeBoard: ActiveBoard,
-  globalBoard: LocalBoard[]
+  globalBoard: LocalBoard[],
 ): string => ss + activeBoard2Char(activeBoard) + '\n' + globalBoardToString(globalBoard)

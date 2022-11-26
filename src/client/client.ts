@@ -8,7 +8,7 @@ const ws = new WebSocket(`ws://${host}:44777`)
 const tg = makeTermGrid(13, 19)
 tg.clear()
 
-tg.onInput(data => {
+tg.onInput((data) => {
   switch (data) {
     case keyCodes.enter:
       tg.text(1, 1, 'Hello world!', colors.green, colors.black)
@@ -20,7 +20,7 @@ tg.onInput(data => {
   tg.draw()
 })
 
-ws.on('message', data => {
+ws.on('message', (data) => {
   const status = parseStatusString(data.toString())
   for (const localBoard of status.globalBoard) {
     console.log(localBoard.status)

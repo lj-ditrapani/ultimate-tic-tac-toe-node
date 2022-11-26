@@ -9,11 +9,11 @@ export class Game {
     private readonly wss: Server,
     private readonly state: State,
     private readonly interpretConn: InterpretConnection,
-    private readonly messageHandler: MessageHandler
+    private readonly messageHandler: MessageHandler,
   ) {}
 
   public listen() {
-    this.wss.on('connection', ws => {
+    this.wss.on('connection', (ws) => {
       const event = this.interpretConn(ws, this.state.getStatus())
       switch (event.eventType) {
         case 'spectatorJoined':
@@ -47,10 +47,9 @@ export const interpretConnection = (ws: WebSocket, status: Status): Event => {
 
 export type MessageHandler = (ws: WebSocket, message: string) => void
 
-export const messageHandlerFactory = (
-  state: State,
-  computeNextStatus: NextStatus
-): MessageHandler => (ws: WebSocket, message: string): void => {
-  const newStatus = computeNextStatus(message, ws, state.getStatus())
-  state.update(newStatus)
-}
+export const messageHandlerFactory =
+  (state: State, computeNextStatus: NextStatus): MessageHandler =>
+  (ws: WebSocket, message: string): void => {
+    const newStatus = computeNextStatus(message, ws, state.getStatus())
+    state.update(newStatus)
+  }
