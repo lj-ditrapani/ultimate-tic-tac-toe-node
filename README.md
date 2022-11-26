@@ -6,9 +6,22 @@ Work in progress.
 LAN multiplayer Ultimate tic-tac-toe server in typescript on node.
 Websocket-based.
 
+- Client: node cli app
+- Server: node express
+
 
 Run it!
 -------
+
+
+Install node with [https://github.com/nvm-sh/nvm](nvm).
+
+```
+nvm install     # one-time install
+nvm use         # each time you enter the project directory
+```
+
+Now setup the project and run.
 
 ```
 npm install
