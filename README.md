@@ -14,7 +14,7 @@ Docker
 
     sh docker-build.sh
     sh docker-run.sh server
-    host=localhost sh docker-run.sh
+    host=localhost sh docker-run.sh client
 
 
 Develop

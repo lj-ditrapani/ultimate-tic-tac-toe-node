@@ -15,6 +15,11 @@ const appRouter = t.router({
       text: `Hello ${input.name}` as const,
     }
   }),
+  register: t.procedure.input(z.object({})).mutation((_) => {
+    return 'you are p1'
+  }),
+  status: t.procedure.input(z.object({})).query((_) => 'state of game...'),
+  play: t.procedure.input(z.object({})).mutation((_) => 'made a move'),
 })
 
 export type AppRouter = typeof appRouter
