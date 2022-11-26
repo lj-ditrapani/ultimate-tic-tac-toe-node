@@ -10,23 +10,65 @@ Websocket-based.
 - Server: node express
 
 
-Run it!
+Docker
+------
+
+    sh docker-build.sh
+    mode=server sh docker-run.sh
+    mode=client host=localhost sh docker-run.sh
+
+
+Develop
 -------
 
+### Setup ###
 
 Install node with [https://github.com/nvm-sh/nvm](nvm).
 
-```
-nvm install     # one-time install
-nvm use         # each time you enter the project directory
-```
+    nvm install     # one-time install
+    nvm use         # each time you enter the project directory
 
-Now setup the project and run.
+Install npm packages.
 
-```
-npm install
-npm start
-```
+    npm install
+
+
+### Run ###
+
+    npm start
+
+
+### Run during dev ###
+
+While developing, you can skip building by using tsnode.
+You still need to setup your config as described above.
+
+    npm run dev
+
+
+### Format, lint, build, test ###
+
+    npm run all
+
+
+### Test coverage ###
+
+    # Run the tests with `npm run all` or
+    npm test
+    # This will generate the test coverage report
+    # Then open the test coverage report
+    firefox coverage/lcov-report/index.html
+
+
+### Generate documentation ###
+
+    npm run doc
+    firefox docs/index.html &
+
+
+### Update dependencies ###
+
+    npm run ncu
 
 
 Notes
