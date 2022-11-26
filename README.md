@@ -4,7 +4,6 @@ Ultimate Tic-tac-toe Server
 Work in progress.
 
 LAN multiplayer Ultimate tic-tac-toe server in typescript on node.
-Websocket-based.
 
 - Client: node cli app
 - Server: node express

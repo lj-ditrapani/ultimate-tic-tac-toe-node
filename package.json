@@ -30,7 +30,6 @@
     "dotenv": "^16.0.3",
     "ramda": "^0.28.0",
     "term-grid-ui": "^0.7.0",
-    "ws": "^8.11.0",
     "zod": "^3.19.1"
   },
   "devDependencies": {
