@@ -13,7 +13,7 @@ export const stateSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('reset'), player: playerSchema }),
 ])
 export type State = Infer<typeof stateSchema>
-export const boardNumSchema = z.union([
+const boardNumSchema = z.union([
   z.literal(1),
   z.literal(2),
   z.literal(3),
@@ -24,7 +24,9 @@ export const boardNumSchema = z.union([
   z.literal(8),
   z.literal(9),
 ])
+const cellNumSchema = boardNumSchema
 export type BoardNum = z.infer<typeof boardNumSchema>
+export type CellNum = BoardNum
 
 export type Cell = 'E' | 'X' | 'O'
 
@@ -38,3 +40,14 @@ export type GameState = {
   activeBoard: BoardNum
   boards: Boards
 }
+
+export const firstBoardSchema = z.object({
+  boardNum: boardNumSchema,
+  playerId: z.number(),
+})
+export type FirstBoard = Infer<typeof firstBoardSchema>
+export const playSchema = z.object({
+  cellNum: cellNumSchema,
+  playerId: z.number(),
+})
+export type Play = Infer<typeof playSchema>

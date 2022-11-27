@@ -1,4 +1,12 @@
-import type { Board, BoardNum, Boards, GameState, State } from './models'
+import type {
+  Board,
+  BoardNum,
+  Boards,
+  FirstBoard,
+  GameState,
+  Play,
+  State,
+} from './models'
 
 export class Game {
   private state: State = { name: 'init' }
@@ -31,7 +39,7 @@ export class Game {
     boards: this.boards,
   })
 
-  readonly firstBoard = (boardNum: BoardNum, playerId: number) => {
+  readonly firstBoard = ({ boardNum, playerId }: FirstBoard) => {
     if (this.state.name === '1st board' && playerId === this.p1Id) {
       this.state = { name: 'turn', player: 'p1' }
       this.activeBoard = boardNum
@@ -41,7 +49,15 @@ export class Game {
     }
   }
 
-  readonly play = (_: {}) => {
+  readonly play = ({ cellNum, playerId }: Play) => {
+    const thisPlayer =
+      playerId === this.p1Id ? 'p1' : playerId === this.p2Id ? 'p2' : null
+    if (this.state.name === 'turn' && this.state.player === thisPlayer) {
+      const mark = this.state.player === 'p1' ? 'X' : 'O'
+      this.boards[this.activeBoard - 1]!.cells[cellNum - 1] = mark
+      this.activeBoard = cellNum
+      return null
+    }
     return ''
   }
 
