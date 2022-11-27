@@ -39,3 +39,4 @@ export type GameState = {
   activeBoard: ActiveBoard
   boards: Boards
 }
+export type PlayerInfo = { actor: 'p1' | 'p2' | 'spectator'; id?: number }

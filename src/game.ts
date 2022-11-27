@@ -8,6 +8,7 @@ import type {
   GameState,
   Move,
   Player,
+  PlayerInfo,
   State,
 } from './models'
 
@@ -24,7 +25,7 @@ export class Game {
     this.p2Id = rand()
   }
 
-  readonly register = () => {
+  readonly register = (): PlayerInfo => {
     if (this.state.name === 'init') {
       this.state = { name: 'ready p1' }
       return { actor: 'p1', id: this.p1Id }
