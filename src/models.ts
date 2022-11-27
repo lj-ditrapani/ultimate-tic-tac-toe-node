@@ -19,10 +19,6 @@ export const moveSchema = z.object({
   boardNum: boardNumSchema,
   cellNum: cellNumSchema,
 })
-export const resetSchema = z.object({
-  playerId: z.number(),
-})
-export type Reset = Infer<typeof resetSchema>
 
 export type BoardNum = z.infer<typeof boardNumSchema>
 export type CellNum = BoardNum

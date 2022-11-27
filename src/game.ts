@@ -8,7 +8,6 @@ import type {
   GameState,
   Move,
   Player,
-  Reset,
   State,
 } from './models'
 
@@ -84,7 +83,7 @@ export class Game {
     return this.status()
   }
 
-  readonly reset = ({ playerId }: Reset) => {
+  readonly reset = (playerId: number) => {
     const player = this.getPlayerFromId(playerId)
     if (['win', 'tie'].includes(this.state.name) && player === 'p1') {
       this.state = { name: 'reset p1' }
