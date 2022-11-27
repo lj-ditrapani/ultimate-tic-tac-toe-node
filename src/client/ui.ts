@@ -65,6 +65,10 @@ export class Ui {
     this.tg.draw()
   }
 
+  // markCell
+  // markActiveBoard
+  // markActiveCell
+
   done() {
     this.tg.reset()
     this.exit()

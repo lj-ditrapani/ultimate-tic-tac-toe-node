@@ -2,6 +2,10 @@ import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
 import { Game } from './client/game.js'
 import { makeUi } from './client/ui.js'
 import type { AppRouter } from './server'
+import fetch from 'node-fetch'
+
+const g = globalThis as unknown as { fetch: typeof fetch }
+g.fetch = fetch
 
 export const trpcClient = createTRPCProxyClient<AppRouter>({
   links: [

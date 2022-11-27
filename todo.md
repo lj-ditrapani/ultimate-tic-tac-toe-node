@@ -1,2 +1,1 @@
 - get host from env var; not hard coded
-- remove experimental node module fetch warning (use node-fetch again?)
