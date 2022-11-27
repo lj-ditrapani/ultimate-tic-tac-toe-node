@@ -19,14 +19,18 @@ export const moveSchema = z.object({
   boardNum: boardNumSchema,
   cellNum: cellNumSchema,
 })
+export const resetSchema = z.object({
+  playerId: z.number(),
+})
+export type Reset = Infer<typeof resetSchema>
 
 export type BoardNum = z.infer<typeof boardNumSchema>
 export type CellNum = BoardNum
 export type Move = Infer<typeof moveSchema>
 export type Player = 'p1' | 'p2'
 export type State =
-  | { name: 'init' | 'ready p1' | 'tie' }
-  | { name: 'turn' | 'win' | 'reset'; player: Player }
+  | { name: 'init' | 'ready p1' | 'tie' | 'reset p1' }
+  | { name: 'turn' | 'win'; player: Player }
 export type ActiveBoard = z.infer<typeof boardNumSchema> | 'all'
 export type Cell = 'E' | 'X' | 'O'
 export type Board = {

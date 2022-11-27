@@ -8,29 +8,30 @@ import type {
   GameState,
   Move,
   Player,
+  Reset,
   State,
 } from './models'
 
 export class Game {
   private state: State = { name: 'init' }
   private activeBoard: ActiveBoard = 'all'
-  boards: Boards
-  private p1Id: number | undefined = undefined
-  private p2Id: number | undefined = undefined
+  private boards: Boards
+  private p1Id: number
+  private p2Id: number
 
-  constructor(private readonly rand: () => number) {
+  constructor(rand: () => number) {
     this.boards = this.newBoards()
+    this.p1Id = rand()
+    this.p2Id = rand()
   }
 
   readonly register = () => {
     if (this.state.name === 'init') {
       this.state = { name: 'ready p1' }
-      this.p1Id = this.rand()
       return { actor: 'p1', id: this.p1Id }
     }
     if (this.state.name === 'ready p1') {
       this.state = { name: 'turn', player: 'p1' }
-      this.p2Id = this.rand()
       return { actor: 'p2', id: this.p2Id }
     }
     return { actor: 'spectator' }
@@ -46,8 +47,7 @@ export class Game {
     if (this.state.name !== 'turn') {
       throw err("It's not time to take turns")
     }
-    const thisPlayer =
-      playerId === this.p1Id ? 'p1' : playerId === this.p2Id ? 'p2' : 'spectator'
+    const thisPlayer = this.getPlayerFromId(playerId)
     if (thisPlayer === 'spectator') {
       throw err("Spectators can't play")
     }
@@ -84,6 +84,24 @@ export class Game {
     return this.status()
   }
 
+  readonly reset = ({ playerId }: Reset) => {
+    const player = this.getPlayerFromId(playerId)
+    if (['win', 'tie'].includes(this.state.name) && player === 'p1') {
+      this.state = { name: 'reset p1' }
+      return this.status()
+    }
+    if (this.state.name === 'reset p1' && player === 'p2') {
+      this.activeBoard = 'all'
+      const [one, two] = [this.p1Id, this.p2Id]
+      this.p1Id = two
+      this.p2Id = one
+      this.boards = this.newBoards()
+      this.state = { name: 'turn', player: 'p1' }
+      return this.status()
+    }
+    throw err(`Bad reset call. State: ${this.state.name} Player: ${player}`)
+  }
+
   private newBoards(): Boards {
     return [
       this.newBoard(),
@@ -103,6 +121,10 @@ export class Game {
       status: 'available',
       cells: ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
     }
+  }
+
+  private getPlayerFromId(playerId: number): Player | 'spectator' {
+    return playerId === this.p1Id ? 'p1' : playerId === this.p2Id ? 'p2' : 'spectator'
   }
 }
 
