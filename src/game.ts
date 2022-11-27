@@ -51,7 +51,6 @@ export class Game {
       throw err('Bad play.  Cell is not empty!')
     }
     this.boards[boardIndx].cells[cellNum] = mark
-    // TODO: check if cellNum is E empty
     this.activeBoard = cellNum
     // TODO: check if activeBoard is finished
     // activeBoard -> 'all'
