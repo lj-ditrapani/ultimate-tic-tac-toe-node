@@ -1,15 +1,3 @@
-Client
-- display status string
-- if p1 or p2, and your Turn
-    - respond to arrow/enter
-
-Server
-- next turn logic
-- tests
-
-shared folder?
-
-- publish to npm
-- multi-stage dockerfile
-- documentation (tsdoc)
-- publish docker image to docker hub
+- activeBoard must incrlude 'all' value
+    1) for 1st turn
+    2) for any turn where player sends next player to a 'finished' board
