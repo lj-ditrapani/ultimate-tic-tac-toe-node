@@ -1,1 +1,0 @@
-- get host from env var; not hard coded
