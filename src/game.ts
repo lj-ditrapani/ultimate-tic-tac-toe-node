@@ -1,12 +1,4 @@
-import type {
-  ActiveBoard,
-  Board,
-  Boards,
-  FirstBoard,
-  GameState,
-  Play,
-  State,
-} from './models'
+import type { ActiveBoard, Board, Boards, GameState, Play, State } from './models'
 
 export class Game {
   private state: State = { name: 'init' }
@@ -26,7 +18,7 @@ export class Game {
       return { actor: 'p1', id: this.p1Id }
     }
     if (this.state.name === 'ready p1') {
-      this.state = { name: '1st board' }
+      this.state = { name: 'turn', player: 'p1' }
       this.p2Id = this.rand()
       return { actor: 'p2', id: this.p2Id }
     }
@@ -38,16 +30,6 @@ export class Game {
     activeBoard: this.activeBoard,
     boards: this.boards,
   })
-
-  readonly firstBoard = ({ boardNum, playerId }: FirstBoard) => {
-    if (this.state.name === '1st board' && playerId === this.p1Id) {
-      this.state = { name: 'turn', player: 'p1' }
-      this.activeBoard = boardNum
-      return null
-    } else {
-      return ''
-    }
-  }
 
   readonly play = ({ boardNum, cellNum, playerId }: Play) => {
     const thisPlayer =

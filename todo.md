@@ -1,1 +1,2 @@
 - stateSchema may be unused; just define State type instead?
+- learn how to do 400 errors with trpc
