@@ -1,5 +1,14 @@
 import { TRPCError } from '@trpc/server'
-import type { ActiveBoard, Board, Boards, GameState, Play, State } from './models'
+import type {
+  ActiveBoard,
+  Board,
+  BoardNum,
+  Boards,
+  CellNum,
+  GameState,
+  Play,
+  State,
+} from './models'
 
 export class Game {
   private state: State = { name: 'init' }
@@ -46,15 +55,31 @@ export class Game {
     }
     const mark = this.state.player === 'p1' ? 'X' : 'O'
     const boardIndx = this.activeBoard === 'all' ? boardNum : this.activeBoard
-    const currentCell = this.boards[boardIndx].cells[cellNum]
+    const board = this.boards[boardIndx]
+    const currentCell = board.cells[cellNum]
     if (currentCell !== 'E') {
       throw err('Bad play.  Cell is not empty!')
     }
-    this.boards[boardIndx].cells[cellNum] = mark
-    this.activeBoard = cellNum
-    // TODO: check if activeBoard is finished
-    // activeBoard -> 'all'
-    return null
+    board.cells[cellNum] = mark
+    if (boardIsWon(board, mark)) {
+      board.status = mark
+    }
+    if (boardIsTie(board)) {
+      board.status = 'tie'
+    }
+    const nextBoard = this.boards[cellNum]
+    if (nextBoard.status !== 'available') {
+      this.activeBoard = 'all'
+    } else {
+      this.activeBoard = cellNum
+    }
+    if (gameIsWon(this.boards, mark)) {
+      this.state = { name: 'win', player: thisPlayer }
+    }
+    if (gameIsTie(this.boards)) {
+      this.state = { name: 'tie' }
+    }
+    return this.status()
   }
 
   private newBoards(): Boards {
@@ -84,3 +109,46 @@ const err = (message: string) =>
     code: 'BAD_REQUEST',
     message,
   })
+
+const boardIsWon = (board: Board, mark: 'X' | 'O'): boolean => {
+  const cells = board.cells
+  const hasMark = (a: CellNum) => cells[a] === mark
+  const hasLine = (a: CellNum, b: CellNum, c: CellNum) =>
+    hasMark(a) && hasMark(b) && hasMark(c)
+  return (
+    hasLine(0, 1, 2) ||
+    hasLine(3, 4, 5) ||
+    hasLine(6, 7, 8) ||
+    hasLine(0, 3, 6) ||
+    hasLine(1, 4, 7) ||
+    hasLine(2, 5, 8) ||
+    hasLine(0, 4, 8) ||
+    hasLine(2, 4, 6)
+  )
+}
+
+const boardIsTie = (board: Board): boolean => {
+  const indexes = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const
+  return indexes.every((i) => board.cells[i] !== 'E')
+}
+
+const gameIsWon = (boards: Boards, mark: 'X' | 'O'): boolean => {
+  const hasMark = (a: BoardNum) => boards[a].status === mark
+  const hasLine = (a: BoardNum, b: BoardNum, c: BoardNum) =>
+    hasMark(a) && hasMark(b) && hasMark(c)
+  return (
+    hasLine(0, 1, 2) ||
+    hasLine(3, 4, 5) ||
+    hasLine(6, 7, 8) ||
+    hasLine(0, 3, 6) ||
+    hasLine(1, 4, 7) ||
+    hasLine(2, 5, 8) ||
+    hasLine(0, 4, 8) ||
+    hasLine(2, 4, 6)
+  )
+}
+
+const gameIsTie = (boards: Boards): boolean => {
+  const indexes = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const
+  return indexes.every((i) => boards[i].status !== 'available')
+}

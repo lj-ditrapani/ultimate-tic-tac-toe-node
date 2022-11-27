@@ -30,7 +30,7 @@ export type State =
 export type ActiveBoard = z.infer<typeof boardNumSchema> | 'all'
 export type Cell = 'E' | 'X' | 'O'
 export type Board = {
-  status: 'available' | 1 | 2 | 'tie'
+  status: 'available' | 'X' | 'O' | 'tie'
   cells: [Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell]
 }
 export type Boards = [Board, Board, Board, Board, Board, Board, Board, Board, Board]
