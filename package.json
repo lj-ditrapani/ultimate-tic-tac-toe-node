@@ -18,6 +18,7 @@
     "ncu": "ncu -u && rm -fr node_modules package-lock.json && npm install",
     "tsc": "tsc",
     "doc": "typedoc --out doc/ src",
+    "live-server-test": "ts-node-esm test/live-server-test.ts",
     "ci": "npm run check && tsc && npm test",
     "all": "npm run lint && tsc && npm test"
   },

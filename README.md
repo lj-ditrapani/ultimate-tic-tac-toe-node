@@ -68,6 +68,18 @@ You still need to setup your config as described above.
     firefox coverage/lcov-report/index.html
 
 
+### Manual Live Server Test ###
+
+Run a manual live server test that simulates a complete game.
+First start the server.
+
+    npm run server-dev
+
+Now run the test script.
+
+    npm run live-server-test
+
+
 ### Generate documentation ###
 
     npm run doc
