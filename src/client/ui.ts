@@ -33,6 +33,11 @@ export class Ui {
         this.tg.set(y, x, ' ', this.textC, this.boardBg)
       }
     }
+    for (const x of [...Array(width).keys()]) {
+      for (const y of [...Array(height - width).keys()]) {
+        this.tg.set(y + width, x, ' ', this.textC, this.textBg)
+      }
+    }
     this.drawHBoarder(0)
     this.draw2HLinesFor3HBoards(2)
     this.drawHBoarder(6)
