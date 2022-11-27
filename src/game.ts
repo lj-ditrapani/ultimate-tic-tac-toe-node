@@ -6,7 +6,7 @@ import type {
   Boards,
   CellNum,
   GameState,
-  Play,
+  Move,
   State,
 } from './models'
 
@@ -41,7 +41,7 @@ export class Game {
     boards: this.boards,
   })
 
-  readonly play = ({ boardNum, cellNum, playerId }: Play) => {
+  readonly move = ({ boardNum, cellNum, playerId }: Move) => {
     if (this.state.name !== 'turn') {
       throw err("It's not time to take turns")
     }
@@ -58,7 +58,7 @@ export class Game {
     const board = this.boards[boardIndx]
     const currentCell = board.cells[cellNum]
     if (currentCell !== 'E') {
-      throw err('Bad play.  Cell is not empty!')
+      throw err('Bad move.  Cell is not empty!')
     }
     board.cells[cellNum] = mark
     if (boardIsWon(board, mark)) {

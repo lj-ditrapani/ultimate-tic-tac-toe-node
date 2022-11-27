@@ -14,7 +14,7 @@ const tempNumbers = [
 ] as const
 const boardNumSchema = z.union(tempNumbers)
 const cellNumSchema = boardNumSchema
-export const playSchema = z.object({
+export const moveSchema = z.object({
   playerId: z.number(),
   boardNum: boardNumSchema,
   cellNum: cellNumSchema,
@@ -22,7 +22,7 @@ export const playSchema = z.object({
 
 export type BoardNum = z.infer<typeof boardNumSchema>
 export type CellNum = BoardNum
-export type Play = Infer<typeof playSchema>
+export type Move = Infer<typeof moveSchema>
 export type Player = 'p1' | 'p2'
 export type State =
   | { name: 'init' | 'ready p1' | 'tie' }

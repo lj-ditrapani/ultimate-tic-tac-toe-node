@@ -25,11 +25,11 @@ const status1 = await trpc.status.query({})
 console.log(status1)
 const status2 = await trpc.status.query({})
 console.log(status2)
-const x = await trpc.play
+const x = await trpc.move
   .mutate({ playerId: p2.id, boardNum: 3, cellNum: 2 })
   .catch((e) => console.log(e))
 console.log(x)
-const p = await trpc.play.mutate({ playerId: p1.id, boardNum: 3, cellNum: 2 })
+const p = await trpc.move.mutate({ playerId: p1.id, boardNum: 3, cellNum: 2 })
 console.log(p)
 const status3 = await trpc.status.query({})
 console.log(status3)
