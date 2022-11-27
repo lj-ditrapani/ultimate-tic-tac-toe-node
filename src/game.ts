@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server'
 import type { ActiveBoard, Board, Boards, GameState, Play, State } from './models'
 
 export class Game {
@@ -32,20 +33,29 @@ export class Game {
   })
 
   readonly play = ({ boardNum, cellNum, playerId }: Play) => {
-    const thisPlayer =
-      playerId === this.p1Id ? 'p1' : playerId === this.p2Id ? 'p2' : null
-    if (this.state.name === 'turn' && this.state.player === thisPlayer) {
-      const mark = this.state.player === 'p1' ? 'X' : 'O'
-      if (this.activeBoard !== 'all' && this.activeBoard !== boardNum) {
-        throw new Error('Illegal board num')
-      }
-      this.boards[boardNum].cells[cellNum] = mark
-      this.activeBoard = cellNum
-      // TODO: check if activeBoard is finished
-      // activeBoard -> 'all'
-      return null
+    if (this.state.name !== 'turn') {
+      throw err("It's not time to take turns")
     }
-    return ''
+    const thisPlayer =
+      playerId === this.p1Id ? 'p1' : playerId === this.p2Id ? 'p2' : 'spectator'
+    if (thisPlayer === 'spectator') {
+      throw err("Spectators can't play")
+    }
+    if (thisPlayer !== this.state.player) {
+      throw err('Not your turn')
+    }
+    const mark = this.state.player === 'p1' ? 'X' : 'O'
+    const boardIndx = this.activeBoard === 'all' ? boardNum : this.activeBoard
+    const currentCell = this.boards[boardIndx].cells[cellNum]
+    if (currentCell !== 'E') {
+      throw err('Bad play.  Cell is not empty!')
+    }
+    this.boards[boardIndx].cells[cellNum] = mark
+    // TODO: check if cellNum is E empty
+    this.activeBoard = cellNum
+    // TODO: check if activeBoard is finished
+    // activeBoard -> 'all'
+    return null
   }
 
   private newBoards(): Boards {
@@ -69,3 +79,9 @@ export class Game {
     }
   }
 }
+
+const err = (message: string) =>
+  new TRPCError({
+    code: 'BAD_REQUEST',
+    message,
+  })
