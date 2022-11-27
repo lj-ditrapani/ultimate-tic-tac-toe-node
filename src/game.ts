@@ -1,6 +1,6 @@
 import type {
+  ActiveBoard,
   Board,
-  BoardNum,
   Boards,
   FirstBoard,
   GameState,
@@ -10,7 +10,7 @@ import type {
 
 export class Game {
   private state: State = { name: 'init' }
-  private activeBoard: BoardNum = 1
+  private activeBoard: ActiveBoard = 'all'
   boards: Boards
   private p1Id: number | undefined = undefined
   private p2Id: number | undefined = undefined
@@ -49,13 +49,18 @@ export class Game {
     }
   }
 
-  readonly play = ({ cellNum, playerId }: Play) => {
+  readonly play = ({ boardNum, cellNum, playerId }: Play) => {
     const thisPlayer =
       playerId === this.p1Id ? 'p1' : playerId === this.p2Id ? 'p2' : null
     if (this.state.name === 'turn' && this.state.player === thisPlayer) {
       const mark = this.state.player === 'p1' ? 'X' : 'O'
-      this.boards[this.activeBoard - 1]!.cells[cellNum - 1] = mark
+      if (this.activeBoard !== 'all' && this.activeBoard !== boardNum) {
+        throw new Error('Illegal board num')
+      }
+      this.boards[boardNum].cells[cellNum] = mark
       this.activeBoard = cellNum
+      // TODO: check if activeBoard is finished
+      // activeBoard -> 'all'
       return null
     }
     return ''
