@@ -1,1 +1,1 @@
-- stateSchema may be unused; just define State type instead?
+- rename play to move?
