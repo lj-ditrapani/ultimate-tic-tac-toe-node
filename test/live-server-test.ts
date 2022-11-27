@@ -13,14 +13,14 @@ const trpc = createTRPCProxyClient<AppRouter>({
 let p1 = await trpc.register.mutate({})
 console.log(p1)
 assert.equal(p1.actor, 'p1')
-if (p1.id === undefined) {
+if (p1.actor !== 'p1') {
   throw 'I expected to be p1!'
 }
 assert.equal((await trpc.status.query({})).state.name, 'ready p1')
 let p2 = await trpc.register.mutate({})
 assert.equal(p2.actor, 'p2')
 console.log(p2)
-if (p2.id === undefined) {
+if (p2.actor !== 'p2') {
   throw 'I expected to be p2!'
 }
 assert.equal((await trpc.status.query({})).state.name, 'turn')
