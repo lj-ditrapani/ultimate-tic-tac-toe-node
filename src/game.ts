@@ -98,7 +98,7 @@ export class Game {
       this.state = { name: 'turn', player: 'p1' }
       return this.status()
     }
-    throw err(`Bad reset call. State: ${this.state.name} Player: ${player}`)
+    throw err(`Bad reset. State: '${this.state.name}' Player: ${player}`)
   }
 
   private newBoards(): Boards {

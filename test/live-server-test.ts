@@ -10,14 +10,14 @@ const trpc = createTRPCProxyClient<AppRouter>({
   ],
 })
 
-const p1 = await trpc.register.mutate({})
+let p1 = await trpc.register.mutate({})
 console.log(p1)
 assert.equal(p1.actor, 'p1')
 if (p1.id === undefined) {
   throw 'I expected to be p1!'
 }
 assert.equal((await trpc.status.query({})).state.name, 'ready p1')
-const p2 = await trpc.register.mutate({})
+let p2 = await trpc.register.mutate({})
 assert.equal(p2.actor, 'p2')
 console.log(p2)
 if (p2.id === undefined) {
@@ -61,5 +61,25 @@ assert.equal(m.boards[5].cells[0], 'X')
 assert.equal(m.boards[4].status, 'X')
 assert.equal(m.boards[5].status, 'X')
 assert.deepEqual(m.state, { name: 'win', player: 'p1' })
+
+await trpc.reset.mutate(p1.id)
+const r = await trpc.reset.mutate(p2.id)
+assert.equal(r.activeBoard, 'all')
+assert.equal(r.boards[5].cells[0], 'E')
+assert.equal(r.boards[4].status, 'available')
+assert.equal(r.boards[5].status, 'available')
+assert.deepEqual(r.state, { name: 'turn', player: 'p1' })
+
+const temp = p1
+p1 = p2
+p2 = temp
+
+console.log('p1', p1)
+console.log('p2', p2)
+
+const x1 = await trpc.move.mutate({ playerId: p1.id, boardNum: 3, cellNum: 2 })
+assert.deepEqual(x1.state, { name: 'turn', player: 'p2' })
+assert.equal(x1.activeBoard, 2)
+assert.equal(x1.boards[3].cells[2], 'X')
 
 console.log('>>>>>>> SUCCESS!!!')
