@@ -17,4 +17,6 @@ const appRouter = t.router({
 
 export type AppRouter = typeof appRouter
 
-createHTTPServer({ router: appRouter }).listen(3000)
+const port = 3000
+console.log(`Starting server on port ${port}`)
+createHTTPServer({ router: appRouter }).listen(port)
