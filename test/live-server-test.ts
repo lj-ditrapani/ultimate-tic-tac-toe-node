@@ -1,4 +1,5 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
+import assert from 'node:assert/strict'
 import type { AppRouter } from '../src/server'
 
 const trpc = createTRPCProxyClient<AppRouter>({
@@ -11,25 +12,54 @@ const trpc = createTRPCProxyClient<AppRouter>({
 
 const p1 = await trpc.register.mutate({})
 console.log(p1)
+assert.equal(p1.actor, 'p1')
 if (p1.id === undefined) {
   throw 'I expected to be p1!'
 }
+assert.equal((await trpc.status.query({})).state.name, 'ready p1')
 const p2 = await trpc.register.mutate({})
+assert.equal(p2.actor, 'p2')
 console.log(p2)
 if (p2.id === undefined) {
   throw 'I expected to be p2!'
 }
+assert.equal((await trpc.status.query({})).state.name, 'turn')
 const spectator = await trpc.register.mutate({})
-console.log(spectator)
-const status1 = await trpc.status.query({})
-console.log(status1)
-const status2 = await trpc.status.query({})
-console.log(status2)
-const x = await trpc.move
-  .mutate({ playerId: p2.id, boardNum: 3, cellNum: 2 })
-  .catch((e) => console.log(e))
-console.log(x)
-const p = await trpc.move.mutate({ playerId: p1.id, boardNum: 3, cellNum: 2 })
-console.log(p)
-const status3 = await trpc.status.query({})
-console.log(status3)
+assert.equal(spectator.actor, 'spectator')
+assert.equal((await trpc.status.query({})).state.name, 'turn')
+const m1 = await trpc.move.mutate({ playerId: p1.id, boardNum: 3, cellNum: 2 })
+assert.deepEqual(m1.state, { name: 'turn', player: 'p2' })
+assert.equal(m1.activeBoard, 2)
+assert.equal(m1.boards[3].cells[2], 'X')
+const m2 = await trpc.move.mutate({ playerId: p2.id, boardNum: 2, cellNum: 3 })
+assert.deepEqual(m2.state, { name: 'turn', player: 'p1' })
+assert.equal(m2.activeBoard, 3)
+assert.equal(m2.boards[2].cells[3], 'O')
+await trpc.move.mutate({ playerId: p1.id, boardNum: 3, cellNum: 4 })
+await trpc.move.mutate({ playerId: p2.id, boardNum: 4, cellNum: 3 })
+const m5 = await trpc.move.mutate({ playerId: p1.id, boardNum: 3, cellNum: 6 })
+assert.deepEqual(m5.state, { name: 'turn', player: 'p2' })
+assert.equal(m5.activeBoard, 6)
+assert.equal(m5.boards[3].cells[6], 'X')
+assert.equal(m5.boards[3].status, 'X')
+await trpc.move.mutate({ playerId: p2.id, boardNum: 6, cellNum: 4 })
+await trpc.move.mutate({ playerId: p1.id, boardNum: 4, cellNum: 0 })
+await trpc.move.mutate({ playerId: p2.id, boardNum: 0, cellNum: 4 })
+await trpc.move.mutate({ playerId: p1.id, boardNum: 4, cellNum: 1 })
+await trpc.move.mutate({ playerId: p2.id, boardNum: 1, cellNum: 4 })
+await trpc.move.mutate({ playerId: p1.id, boardNum: 4, cellNum: 2 })
+
+await trpc.move.mutate({ playerId: p2.id, boardNum: 2, cellNum: 5 })
+await trpc.move.mutate({ playerId: p1.id, boardNum: 5, cellNum: 8 })
+await trpc.move.mutate({ playerId: p2.id, boardNum: 8, cellNum: 5 })
+await trpc.move.mutate({ playerId: p1.id, boardNum: 5, cellNum: 4 })
+await trpc.move.mutate({ playerId: p2.id, boardNum: 4, cellNum: 5 })
+const m = await trpc.move.mutate({ playerId: p1.id, boardNum: 5, cellNum: 0 })
+
+assert.equal(m.activeBoard, 0)
+assert.equal(m.boards[5].cells[0], 'X')
+assert.equal(m.boards[4].status, 'X')
+assert.equal(m.boards[5].status, 'X')
+assert.deepEqual(m.state, { name: 'win', player: 'p1' })
+
+console.log('>>>>>>> SUCCESS!!!')

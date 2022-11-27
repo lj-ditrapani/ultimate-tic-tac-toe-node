@@ -7,6 +7,7 @@ import type {
   CellNum,
   GameState,
   Move,
+  Player,
   State,
 } from './models'
 
@@ -73,6 +74,7 @@ export class Game {
     } else {
       this.activeBoard = cellNum
     }
+    this.state = { name: 'turn', player: togglePlayers(thisPlayer) }
     if (gameIsWon(this.boards, mark)) {
       this.state = { name: 'win', player: thisPlayer }
     }
@@ -152,3 +154,5 @@ const gameIsTie = (boards: Boards): boolean => {
   const indexes = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const
   return indexes.every((i) => boards[i].status !== 'available')
 }
+
+const togglePlayers = (player: Player): Player => (player === 'p1' ? 'p2' : 'p1')
