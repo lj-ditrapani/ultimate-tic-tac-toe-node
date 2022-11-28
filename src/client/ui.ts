@@ -1,4 +1,5 @@
 import { colors, ITermGrid, makeTermGrid } from 'term-grid-ui'
+import type { Board, BoardNum, CellNum, GameState } from '../models'
 
 const height = 24
 const width = 19
@@ -14,7 +15,7 @@ export class Ui {
   private readonly textBg = colors.lightGrey
   private readonly textC = colors.black
   private readonly boarder = colors.darkCyan
-  private readonly active = colors.darkYellow
+  private readonly active = colors.orange
   private readonly xC = colors.darkBlue
   private readonly oC = colors.darkGreen
 
@@ -52,9 +53,23 @@ export class Ui {
     this.tg.draw()
   }
 
-  drawGame() {
-    this.tg.text(1, 1, 'O', 63, 0)
+  drawGame(gameState: GameState) {
+    const aBoard = gameState.activeBoard === 'all' ? 4 : gameState.activeBoard
+    this.markActiveBoard(numToPoint(aBoard))
+    gameState.boards.forEach((board, index) => {
+      this.drawBoard(board, index as BoardNum)
+    })
     this.tg.draw()
+  }
+
+  drawBoard(board: Board, index: BoardNum) {
+    const boardPoint = numToPoint(index)
+    board.cells.forEach((cell, index) => {
+      if (cell !== 'E') {
+        const cellPoint = numToPoint(index as CellNum)
+        this.markCell(boardPoint, cellPoint, cell)
+      }
+    })
   }
 
   writeMessage(message: string) {
@@ -142,3 +157,7 @@ const toTgCoord = (board: Point, cell: Point): TgCoord => ({
   x: zToTgCoord(board.x, cell.x),
 })
 const zToTgCoord = (board: 0 | 1 | 2, cell: 0 | 1 | 2): number => 1 + board * 6 + cell * 2
+const numToPoint = (num: CellNum): Point => ({
+  y: Math.floor(num / 3) as 0,
+  x: (num % 3) as 0,
+})

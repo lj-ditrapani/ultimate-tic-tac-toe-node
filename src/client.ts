@@ -28,3 +28,4 @@ export const trpcClient = createTRPCProxyClient<AppRouter>({
 const ui = makeUi()
 const game = new Game(ui, trpcClient)
 await game.register()
+await game.gameLoop()

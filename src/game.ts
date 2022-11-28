@@ -13,14 +13,17 @@ import type {
 } from './models'
 
 export class Game {
-  private state: State = { name: 'init' }
-  private activeBoard: ActiveBoard = 'all'
+  private state: State
+  private activeBoard: ActiveBoard
   private boards: Boards
   private p1Id: number
   private p2Id: number
 
   constructor(rand: () => number) {
-    this.boards = this.newBoards()
+    const gameState = initialGameState()
+    this.state = gameState.state
+    this.activeBoard = gameState.activeBoard
+    this.boards = gameState.boards
     this.p1Id = rand()
     this.p2Id = rand()
   }
@@ -95,32 +98,11 @@ export class Game {
       const [one, two] = [this.p1Id, this.p2Id]
       this.p1Id = two
       this.p2Id = one
-      this.boards = this.newBoards()
+      this.boards = newBoards()
       this.state = { name: 'turn', player: 'p1' }
       return this.status()
     }
     throw err(`Bad reset. State: '${this.state.name}' Player: ${player}`)
-  }
-
-  private newBoards(): Boards {
-    return [
-      this.newBoard(),
-      this.newBoard(),
-      this.newBoard(),
-      this.newBoard(),
-      this.newBoard(),
-      this.newBoard(),
-      this.newBoard(),
-      this.newBoard(),
-      this.newBoard(),
-    ]
-  }
-
-  private newBoard(): Board {
-    return {
-      status: 'available',
-      cells: ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
-    }
   }
 
   private getPlayerFromId(playerId: number): Player | 'spectator' {
@@ -178,3 +160,26 @@ const gameIsTie = (boards: Boards): boolean => {
 }
 
 const togglePlayers = (player: Player): Player => (player === 'p1' ? 'p2' : 'p1')
+
+export const initialGameState = (): GameState => ({
+  state: { name: 'init' },
+  activeBoard: 'all',
+  boards: newBoards(),
+})
+
+const newBoards = (): Boards => [
+  newBoard(),
+  newBoard(),
+  newBoard(),
+  newBoard(),
+  newBoard(),
+  newBoard(),
+  newBoard(),
+  newBoard(),
+  newBoard(),
+]
+
+const newBoard = (): Board => ({
+  status: 'available',
+  cells: ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'],
+})
