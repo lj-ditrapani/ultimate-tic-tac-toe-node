@@ -25,9 +25,6 @@ export class Ui {
   }
 
   drawBackground() {
-    this.tg.set(0, 0, 'X', this.xC, this.boarder)
-    this.tg.set(10, 7, 'O', this.oC, this.boardBg)
-    this.tg.set(10, 8, 'O', this.oC, this.active)
     for (const x of [...Array(width).keys()]) {
       for (const y of [...Array(width).keys()]) {
         this.tg.set(y, x, ' ', this.textC, this.boardBg)
@@ -65,9 +62,23 @@ export class Ui {
     this.tg.draw()
   }
 
-  // markCell
-  // markActiveBoard
-  // markActiveCell
+  markCell(board: Point, cell: Point, mark: 'X' | 'O') {
+    const point = toTgCoord(board, cell)
+    const color = mark === 'X' ? this.xC : this.oC
+    this.tg.set(point.y, point.x, mark, color, this.boardBg)
+  }
+  markActiveCell(board: Point, cell: Point) {
+    // TODO: Unmark previous active cell
+    const point = toTgCoord(board, cell)
+    this.tg.set(point.y, point.x, ' ', this.textC, this.active)
+  }
+
+  markActiveBoard(board: Point) {
+    // TODO: Unmark previous active board
+    const y = board.y * 6
+    const x = 3 + board.x * 6
+    this.tg.set(y, x, ' ', this.boardBg, this.active)
+  }
 
   done() {
     this.tg.reset()
@@ -123,3 +134,11 @@ export class Ui {
     }
   }
 }
+
+type Point = { y: 0 | 1 | 2; x: 0 | 1 | 2 }
+type TgCoord = { y: number; x: number }
+const toTgCoord = (board: Point, cell: Point): TgCoord => ({
+  y: zToTgCoord(board.y, cell.y),
+  x: zToTgCoord(board.x, cell.x),
+})
+const zToTgCoord = (board: 0 | 1 | 2, cell: 0 | 1 | 2): number => 1 + board * 6 + cell * 2

@@ -16,7 +16,7 @@ export class Game {
   }
 
   private readonly onInput = (data: string) => {
-    this.ui.writeMessage(`You got data: ${data}`)
+    this.ui.writeMessage(`input: ${data}`)
     if (data === 'q') {
       this.ui.writeMessage('Ok, fine...bye!')
       this.ui.done()
