@@ -1,4 +1,4 @@
-import { colors, ITermGrid, makeTermGrid } from 'term-grid-ui'
+import { blockElements, colors, ITermGrid, makeTermGrid } from 'term-grid-ui'
 import type { Board, BoardNum, CellNum, GameState } from '../models'
 
 const height = 24
@@ -82,6 +82,7 @@ export class Ui {
     const color = mark === 'X' ? this.xC : this.oC
     this.tg.set(point.y, point.x, mark, color, this.boardBg)
   }
+
   markActiveCell(board: Point, cell: Point) {
     // TODO: Unmark previous active cell
     const point = toTgCoord(board, cell)
@@ -92,7 +93,7 @@ export class Ui {
     // TODO: Unmark previous active board
     const y = board.y * 6
     const x = 3 + board.x * 6
-    this.tg.set(y, x, ' ', this.boardBg, this.active)
+    this.tg.set(y, x, blockElements.lower12Block, this.active, this.boarder)
   }
 
   done() {
