@@ -1,3 +1,4 @@
+import { repeat } from 'ramda'
 import { blockElements, colors, ITermGrid, makeTermGrid } from 'term-grid-ui'
 import type { Board, BoardNum, CellNum, GameState } from '../models'
 
@@ -55,7 +56,7 @@ export class Ui {
 
   drawGame(gameState: GameState) {
     const aBoard = gameState.activeBoard === 'all' ? 4 : gameState.activeBoard
-    this.markActiveBoard(numToPoint(aBoard))
+    this.markActiveBoard(null, numToPoint(aBoard))
     gameState.boards.forEach((board, index) => {
       this.drawBoard(board, index as BoardNum)
     })
@@ -73,27 +74,34 @@ export class Ui {
   }
 
   writeMessage(message: string) {
+    this.tg.text(19, 1, repeat(' ', width - 2).join(''), this.textC, this.textBg)
     this.tg.text(19, 1, message, this.textC, this.textBg)
     this.tg.draw()
   }
 
   markCell(board: Point, cell: Point, mark: 'X' | 'O') {
-    const point = toTgCoord(board, cell)
+    const point = bcToTgCoord(board, cell)
     const color = mark === 'X' ? this.xC : this.oC
     this.tg.set(point.y, point.x, mark, color, this.boardBg)
   }
 
-  markActiveCell(board: Point, cell: Point) {
-    // TODO: Unmark previous active cell
-    const point = toTgCoord(board, cell)
-    this.tg.set(point.y, point.x, ' ', this.textC, this.active)
+  markActiveCell(previousCell: Point | null, board: Point, cell: Point) {
+    if (previousCell) {
+      const p = bcToTgCoord(board, previousCell)
+      this.tg.set(p.y, p.x, ' ', this.textC, this.boardBg)
+    }
+    const p = bcToTgCoord(board, cell)
+    this.tg.set(p.y, p.x, ' ', this.textC, this.active)
+    this.tg.draw()
   }
 
-  markActiveBoard(board: Point) {
-    // TODO: Unmark previous active board
-    const y = board.y * 6
-    const x = 3 + board.x * 6
-    this.tg.set(y, x, blockElements.lower12Block, this.active, this.boarder)
+  markActiveBoard(previousBoard: Point | null, board: Point) {
+    if (previousBoard) {
+      const p = boardToTgCoord(previousBoard)
+      this.tg.set(p.y, p.x, ' ', this.active, this.boarder)
+    }
+    const p = boardToTgCoord(board)
+    this.tg.set(p.y, p.x, blockElements.lower12Block, this.active, this.boarder)
   }
 
   done() {
@@ -153,12 +161,16 @@ export class Ui {
 
 type Point = { y: 0 | 1 | 2; x: 0 | 1 | 2 }
 type TgCoord = { y: number; x: number }
-const toTgCoord = (board: Point, cell: Point): TgCoord => ({
+const bcToTgCoord = (board: Point, cell: Point): TgCoord => ({
   y: zToTgCoord(board.y, cell.y),
   x: zToTgCoord(board.x, cell.x),
 })
+const boardToTgCoord = (board: Point): TgCoord => ({
+  y: board.y * 6,
+  x: 3 + board.x * 6,
+})
 const zToTgCoord = (board: 0 | 1 | 2, cell: 0 | 1 | 2): number => 1 + board * 6 + cell * 2
-const numToPoint = (num: CellNum): Point => ({
+export const numToPoint = (num: CellNum): Point => ({
   y: Math.floor(num / 3) as 0,
   x: (num % 3) as 0,
 })
