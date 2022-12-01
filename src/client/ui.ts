@@ -85,13 +85,16 @@ export class Ui {
     this.tg.set(point.y, point.x, mark, color, this.boardBg)
   }
 
-  markActiveCell(previousCell: Point | null, board: Point, cell: Point) {
-    if (previousCell) {
-      const p = bcToTgCoord(board, previousCell)
-      this.tg.set(p.y, p.x, ' ', this.textC, this.boardBg)
+  markActiveCell(board: Point, cell: Point) {
+    const nums = [0, 1, 2] as const
+    for (const x of nums) {
+      for (const y of nums) {
+        const p = bcToTgCoord(board, { y, x })
+        this.tg.bg(p.y, p.x, this.boardBg)
+      }
     }
     const p = bcToTgCoord(board, cell)
-    this.tg.set(p.y, p.x, ' ', this.textC, this.active)
+    this.tg.bg(p.y, p.x, this.active)
     this.tg.draw()
   }
 

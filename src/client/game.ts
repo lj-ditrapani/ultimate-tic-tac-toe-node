@@ -35,7 +35,7 @@ export class Game {
         this.gameState.activeBoard === 'all'
           ? cell
           : numToPoint(this.gameState.activeBoard)
-      this.ui.markActiveCell(null, board, cell)
+      this.ui.markActiveCell(board, cell)
     } else {
       setTimeout(this.gameLoop, 500)
     }
