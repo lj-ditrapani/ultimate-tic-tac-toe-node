@@ -1,13 +1,15 @@
 import { numToPoint, Ui } from './ui.js'
 import type { trpcClient } from '../client.js'
-import type { GameState, PlayerInfo } from '../models'
+import type { GameState, PlayerInfo, CellNum } from '../models'
 import { initialGameState } from '../game.js'
+import { keyCodes } from 'term-grid-ui'
 
 export class Game {
   private playerInfo: PlayerInfo = { actor: 'spectator' }
   private gameState: GameState = initialGameState()
-  // private activeBoard: Point = { y: 1, x: 1 }
-  // private activeCell: Point = { y: 1, x: 1 }
+  private isBoardSelect = false
+  private activeBoard: Point = { y: 1, x: 1 }
+  private activeCell: Point = { y: 1, x: 1 }
 
   constructor(private readonly ui: Ui, private readonly trpc: typeof trpcClient) {
     ui.setOnInputHandler(this.onInput)
@@ -21,7 +23,11 @@ export class Game {
   }
 
   readonly gameLoop = async () => {
-    this.gameState = await this.trpc.status.query({})
+    this.gameLoop2(await this.trpc.status.query({}))
+  }
+
+  readonly gameLoop2 = async (gameState: GameState) => {
+    this.gameState = gameState
     this.ui.drawGame(this.gameState)
     const state = this.gameState.state
     if (state.name === 'turn' || state.name === 'win') {
@@ -35,7 +41,13 @@ export class Game {
         this.gameState.activeBoard === 'all'
           ? cell
           : numToPoint(this.gameState.activeBoard)
-      this.ui.markActiveCell(board, cell)
+      if (this.gameState.activeBoard === 'all') {
+        this.isBoardSelect = true
+      } else {
+        this.ui.markActiveCell(board, cell)
+        this.activeCell = cell
+      }
+      this.activeBoard = board
     } else {
       setTimeout(this.gameLoop, 500)
     }
@@ -46,10 +58,60 @@ export class Game {
       this.ui.writeMessage('Ok, fine...bye!')
       this.ui.done()
     }
-    // TODO: check GameState.State
-    // Only respond to input if its your turn
-    this.ui.writeMessage(`input: ${data}`)
+    const state = this.gameState.state
+    if (state.name !== 'turn' || state.player !== this.playerInfo.actor) {
+      this.ui.writeMessage(`input: ${data}`)
+      return
+    }
+    switch (data) {
+      case keyCodes.arrowLeft:
+        return this.moveLeft()
+      case keyCodes.arrowRight:
+        return this.moveRight()
+      case keyCodes.arrowUp:
+        return this.moveUp()
+      case keyCodes.arrowDown:
+        return this.moveDown()
+      case keyCodes.enter:
+        return this.select(this.playerInfo)
+    }
+  }
+
+  private moveLeft() {
+    if (this.isBoardSelect) {
+    } else {
+    }
+  }
+  private moveRight() {
+    if (this.isBoardSelect) {
+    } else {
+    }
+  }
+  private moveUp() {
+    if (this.isBoardSelect) {
+    } else {
+    }
+  }
+  private moveDown() {
+    if (this.isBoardSelect) {
+    } else {
+    }
+  }
+  private async select(playerInfo: { actor: 'p1' | 'p2'; id: number }) {
+    if (this.isBoardSelect) {
+      this.isBoardSelect = false
+    } else {
+      const boardNum = point2Num(this.activeBoard)
+      const cellNum = point2Num(this.activeCell)
+      const gameState = await this.trpc.move.mutate({
+        playerId: playerInfo.id,
+        boardNum,
+        cellNum,
+      })
+      this.gameLoop2(gameState)
+    }
   }
 }
 
 type Point = { y: 0 | 1 | 2; x: 0 | 1 | 2 }
+const point2Num = (point: Point) => (point.y * 3 + point.x) as CellNum
