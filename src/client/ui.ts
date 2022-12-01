@@ -1,6 +1,6 @@
 import { repeat } from 'ramda'
 import { blockElements, colors, ITermGrid, makeTermGrid } from 'term-grid-ui'
-import type { Board, BoardNum, CellNum, GameState } from '../models'
+import type { Board, BoardNum, CellNum, GameState, PlayerInfo } from '../models'
 
 const height = 24
 const width = 19
@@ -54,13 +54,16 @@ export class Ui {
     this.tg.draw()
   }
 
+  draw() {
+    this.tg.draw()
+  }
+
   drawGame(gameState: GameState) {
     const aBoard = gameState.activeBoard === 'all' ? 4 : gameState.activeBoard
     this.markActiveBoard(null, numToPoint(aBoard))
     gameState.boards.forEach((board, index) => {
       this.drawBoard(board, index as BoardNum)
     })
-    this.tg.draw()
   }
 
   drawBoard(board: Board, index: BoardNum) {
@@ -73,10 +76,14 @@ export class Ui {
     })
   }
 
-  writeMessage(message: string) {
+  writeActor(playerInfo: PlayerInfo) {
     this.tg.text(19, 1, repeat(' ', width - 2).join(''), this.textC, this.textBg)
-    this.tg.text(19, 1, message, this.textC, this.textBg)
-    this.tg.draw()
+    this.tg.text(19, 1, playerInfo.actor, this.textC, this.textBg)
+  }
+
+  writeMessage(message: string) {
+    this.tg.text(20, 1, repeat(' ', width - 2).join(''), this.textC, this.textBg)
+    this.tg.text(20, 1, message, this.textC, this.textBg)
   }
 
   markCell(board: Point, cell: Point, mark: 'X' | 'O') {
@@ -95,7 +102,6 @@ export class Ui {
     }
     const p = bcToTgCoord(board, cell)
     this.tg.bg(p.y, p.x, this.active)
-    this.tg.draw()
   }
 
   markActiveBoard(previousBoard: Point | null, board: Point) {

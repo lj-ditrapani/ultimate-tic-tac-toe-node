@@ -30,6 +30,7 @@ export class Game {
     this.gameState = gameState
     this.ui.drawGame(this.gameState)
     const state = this.gameState.state
+    this.ui.writeActor(this.playerInfo)
     if (state.name === 'turn' || state.name === 'win') {
       this.ui.writeMessage(`${state.name} ${state.player}`)
     } else {
@@ -48,7 +49,9 @@ export class Game {
         this.activeCell = cell
       }
       this.activeBoard = board
+      this.ui.draw()
     } else {
+      this.ui.draw()
       setTimeout(this.gameLoop, 500)
     }
   }
@@ -56,11 +59,13 @@ export class Game {
   private readonly onInput = (data: string) => {
     if (data === 'q') {
       this.ui.writeMessage('Ok, fine...bye!')
+      this.ui.draw()
       this.ui.done()
     }
     const state = this.gameState.state
     if (state.name !== 'turn' || state.player !== this.playerInfo.actor) {
       this.ui.writeMessage(`input: ${data}`)
+      this.ui.draw()
       return
     }
     switch (data) {
