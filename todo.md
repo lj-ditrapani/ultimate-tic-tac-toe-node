@@ -1,8 +1,6 @@
 Refactor drawBackground
 - let drawGame do some of the work
 - drawBackground doesn't call draw
-Game should skip played cells when user moves around, so only empty cells can be active.
-Same for active boards.  Only available boards can become active (use can't move to a won or tied board).
 
-Duplicate helper functions in ui & cilent game
-- move to another file?  pick good name...
+- Publish to Docker hub
+- add github action to build image
