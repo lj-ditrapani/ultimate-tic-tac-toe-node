@@ -3,7 +3,7 @@ import { blockElements, colors, ITermGrid, makeTermGrid } from 'term-grid-ui'
 import type { Board, BoardNum, Cell, CellNum, GameState, PlayerInfo } from '../models'
 import { gridEffect, GridNum, numToPoint, Point } from './helpers.js'
 
-const height = 24
+const height = 23
 const width = 19
 
 export const makeUi = (): Ui => {
@@ -80,12 +80,18 @@ export class Ui {
 
   writeActor(playerInfo: PlayerInfo) {
     this.tg.text(19, 1, repeat(' ', width - 2).join(''), this.textC, this.textBg)
-    this.tg.text(19, 1, playerInfo.actor, this.textC, this.textBg)
+    this.tg.text(20, 1, repeat(' ', width - 2).join(''), this.textC, this.textBg)
+    const actor = playerInfo.actor
+    const name = actor === 'spectator' ? actor : `You are ${actor}`
+    const marker =
+      actor === 'spectator' ? '' : actor === 'p1' ? 'Your marker: X' : 'Your marker: Oh'
+    this.tg.text(19, 1, name, this.textC, this.textBg)
+    this.tg.text(20, 1, marker, this.textC, this.textBg)
   }
 
   writeMessage(message: string) {
-    this.tg.text(20, 1, repeat(' ', width - 2).join(''), this.textC, this.textBg)
-    this.tg.text(20, 1, message, this.textC, this.textBg)
+    this.tg.text(21, 1, repeat(' ', width - 2).join(''), this.textC, this.textBg)
+    this.tg.text(21, 1, message, this.textC, this.textBg)
   }
 
   drawCell(board: Point, cellPoint: Point, cellState: Cell) {
