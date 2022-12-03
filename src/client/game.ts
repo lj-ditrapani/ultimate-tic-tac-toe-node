@@ -1,8 +1,9 @@
-import { numToPoint, Ui } from './ui.js'
+import type { Ui } from './ui.js'
 import type { trpcClient } from '../client.js'
 import type { GameState, PlayerInfo, CellNum } from '../models'
 import { initialGameState } from '../game.js'
 import { keyCodes } from 'term-grid-ui'
+import { gridFind, GridNum, numToPoint, Point } from './helpers.js'
 
 export class Game {
   private playerInfo: PlayerInfo = { actor: 'spectator' }
@@ -37,23 +38,26 @@ export class Game {
       this.ui.writeMessage(state.name)
     }
     if (state.name === 'turn' && state.player === this.playerInfo.actor) {
-      const cell: Point = { y: 1, x: 1 }
       const board =
         this.gameState.activeBoard === 'all'
-          ? cell
+          ? this.findeAvailableBoard()
           : numToPoint(this.gameState.activeBoard)
+      this.ui.markActiveBoard(board)
       if (this.gameState.activeBoard === 'all') {
         this.isBoardSelect = true
       } else {
-        this.ui.markActiveCell(board, cell)
-        this.activeCell = cell
+        this.activeCell = this.findEmptyCell()
+        this.ui.markActiveCell(board, this.activeCell)
       }
       this.activeBoard = board
-      this.ui.draw()
     } else {
-      this.ui.draw()
+      const boardNum = this.gameState.activeBoard
+      if (boardNum !== 'all') {
+        this.ui.markActiveBoard(numToPoint(boardNum))
+      }
       setTimeout(this.gameLoop, 500)
     }
+    this.ui.draw()
   }
 
   private readonly onInput = (data: string) => {
@@ -84,26 +88,46 @@ export class Game {
 
   private moveLeft() {
     if (this.isBoardSelect) {
-      const previousBoard = this.activeBoard
-      this.activeBoard = { y: this.activeBoard.y, x: (this.activeBoard.x - 1) as 0 }
-      this.ui.markActiveBoard(previousBoard, this.activeBoard)
+      this.activeBoard = { y: this.activeBoard.y, x: (this.activeBoard.x - 1) as GridNum }
+      this.ui.markActiveBoard(this.activeBoard)
       this.ui.draw()
     } else {
+      this.activeCell = { y: this.activeCell.y, x: (this.activeCell.x - 1) as GridNum }
+      this.ui.markActiveCell(this.activeBoard, this.activeCell)
+      this.ui.draw()
     }
   }
   private moveRight() {
     if (this.isBoardSelect) {
+      this.activeBoard = { y: this.activeBoard.y, x: (this.activeBoard.x + 1) as GridNum }
+      this.ui.markActiveBoard(this.activeBoard)
+      this.ui.draw()
     } else {
+      this.activeCell = { y: this.activeCell.y, x: (this.activeCell.x + 1) as GridNum }
+      this.ui.markActiveCell(this.activeBoard, this.activeCell)
+      this.ui.draw()
     }
   }
   private moveUp() {
     if (this.isBoardSelect) {
+      this.activeBoard = { y: (this.activeBoard.y - 1) as GridNum, x: this.activeBoard.x }
+      this.ui.markActiveBoard(this.activeBoard)
+      this.ui.draw()
     } else {
+      this.activeCell = { y: (this.activeCell.y - 1) as GridNum, x: this.activeCell.x }
+      this.ui.markActiveCell(this.activeBoard, this.activeCell)
+      this.ui.draw()
     }
   }
   private moveDown() {
     if (this.isBoardSelect) {
+      this.activeBoard = { y: (this.activeBoard.y + 1) as GridNum, x: this.activeBoard.x }
+      this.ui.markActiveBoard(this.activeBoard)
+      this.ui.draw()
     } else {
+      this.activeCell = { y: (this.activeCell.y + 1) as GridNum, x: this.activeCell.x }
+      this.ui.markActiveCell(this.activeBoard, this.activeCell)
+      this.ui.draw()
     }
   }
   private async select(playerInfo: { actor: 'p1' | 'p2'; id: number }) {
@@ -122,7 +146,35 @@ export class Game {
       this.gameLoop2(gameState)
     }
   }
+
+  private findeAvailableBoard(): Point {
+    if (this.gameState.boards[4].status === 'available') {
+      return { y: 1, x: 1 }
+    }
+    return gridFind((y, x) => {
+      const point = { y, x }
+      const board = this.gameState.boards[point2Num(point)]
+      if (board.status === 'available') {
+        return point
+      }
+      return undefined
+    })
+  }
+
+  private findEmptyCell(): Point {
+    const board = this.gameState.boards[point2Num(this.activeBoard)]
+    if (board.cells[4] === 'E') {
+      return { y: 1, x: 1 }
+    }
+    return gridFind((y, x) => {
+      const point = { y, x }
+      const cell = board.cells[point2Num(point)]
+      if (cell === 'E') {
+        return point
+      }
+      return undefined
+    })
+  }
 }
 
-type Point = { y: 0 | 1 | 2; x: 0 | 1 | 2 }
 const point2Num = (point: Point) => (point.y * 3 + point.x) as CellNum
