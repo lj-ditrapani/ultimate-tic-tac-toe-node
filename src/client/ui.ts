@@ -17,8 +17,8 @@ export class Ui {
   private readonly textBg = colors.lightGrey
   private readonly textC = colors.black
   private readonly boarderC = colors.darkCyan
-  private readonly activeC = colors.orange
-  private readonly xC = colors.darkBlue
+  private readonly activeC = colors.yellow
+  private readonly xC = colors.purple
   private readonly oC = colors.orange
 
   constructor(private readonly tg: ITermGrid, private readonly exit: () => never) {}

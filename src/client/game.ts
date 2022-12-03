@@ -38,18 +38,16 @@ export class Game {
       this.ui.writeMessage(state.name)
     }
     if (state.name === 'turn' && state.player === this.playerInfo.actor) {
-      const board =
+      this.activeBoard =
         this.gameState.activeBoard === 'all'
           ? this.findAvailableBoard()
           : numToPoint(this.gameState.activeBoard)
-      this.ui.markActiveBoard(board)
+      this.ui.markActiveBoard(this.activeBoard)
       if (this.gameState.activeBoard === 'all') {
         this.isBoardSelect = true
       } else {
-        this.activeCell = this.findEmptyCell()
-        this.ui.markActiveCell(board, this.activeCell)
+        this.enterCellSelect()
       }
-      this.activeBoard = board
     } else {
       const boardNum = this.gameState.activeBoard
       if (boardNum !== 'all') {
@@ -135,21 +133,24 @@ export class Game {
     if (this.isBoardSelect) {
       if (this.isValidBoard(this.activeBoard)) {
         this.isBoardSelect = false
-        this.ui.markActiveCell(this.activeBoard, this.findEmptyCell())
+        this.enterCellSelect()
         this.ui.draw()
       }
     } else {
       if (this.isValidCell(this.activeCell)) {
-        const boardNum = point2Num(this.activeBoard)
-        const cellNum = point2Num(this.activeCell)
         const gameState = await this.trpc.move.mutate({
           playerId: playerInfo.id,
-          boardNum,
-          cellNum,
+          boardNum: point2Num(this.activeBoard),
+          cellNum: point2Num(this.activeCell),
         })
         this.gameLoop2(gameState)
       }
     }
+  }
+
+  private enterCellSelect() {
+    this.activeCell = this.findEmptyCell()
+    this.ui.markActiveCell(this.activeBoard, this.activeCell)
   }
 
   private findAvailableBoard(): Point {
