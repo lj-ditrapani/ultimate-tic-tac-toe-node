@@ -40,7 +40,7 @@ export class Game {
     if (state.name === 'turn' && state.player === this.playerInfo.actor) {
       const board =
         this.gameState.activeBoard === 'all'
-          ? this.findeAvailableBoard()
+          ? this.findAvailableBoard()
           : numToPoint(this.gameState.activeBoard)
       this.ui.markActiveBoard(board)
       if (this.gameState.activeBoard === 'all') {
@@ -88,66 +88,71 @@ export class Game {
 
   private moveLeft() {
     if (this.isBoardSelect) {
-      this.activeBoard = checkLeft(this.activeBoard, this.isValidBoard)
+      this.activeBoard = checkLeft(this.activeBoard)
       this.ui.markActiveBoard(this.activeBoard)
       this.ui.draw()
     } else {
-      this.activeCell = checkLeft(this.activeCell, this.isValidCell)
+      this.activeCell = checkLeft(this.activeCell)
       this.ui.markActiveCell(this.activeBoard, this.activeCell)
       this.ui.draw()
     }
   }
   private moveRight() {
     if (this.isBoardSelect) {
-      this.activeBoard = checkRight(this.activeBoard, this.isValidBoard)
+      this.activeBoard = checkRight(this.activeBoard)
       this.ui.markActiveBoard(this.activeBoard)
       this.ui.draw()
     } else {
-      this.activeCell = checkRight(this.activeCell, this.isValidCell)
+      this.activeCell = checkRight(this.activeCell)
       this.ui.markActiveCell(this.activeBoard, this.activeCell)
       this.ui.draw()
     }
   }
   private moveUp() {
     if (this.isBoardSelect) {
-      this.activeBoard = checkUp(this.activeBoard, this.isValidBoard)
+      this.activeBoard = checkUp(this.activeBoard)
       this.ui.markActiveBoard(this.activeBoard)
       this.ui.draw()
     } else {
-      this.activeCell = checkUp(this.activeCell, this.isValidCell)
+      this.activeCell = checkUp(this.activeCell)
       this.ui.markActiveCell(this.activeBoard, this.activeCell)
       this.ui.draw()
     }
   }
   private moveDown() {
     if (this.isBoardSelect) {
-      this.activeBoard = checkDown(this.activeBoard, this.isValidBoard)
+      this.activeBoard = checkDown(this.activeBoard)
       this.ui.markActiveBoard(this.activeBoard)
       this.ui.draw()
     } else {
-      this.activeCell = checkDown(this.activeCell, this.isValidCell)
+      this.activeCell = checkDown(this.activeCell)
       this.ui.markActiveCell(this.activeBoard, this.activeCell)
       this.ui.draw()
     }
   }
+
   private async select(playerInfo: { actor: 'p1' | 'p2'; id: number }) {
     if (this.isBoardSelect) {
-      this.isBoardSelect = false
-      this.ui.markActiveCell(this.activeBoard, { y: 1, x: 1 })
-      this.ui.draw()
+      if (this.isValidBoard(this.activeBoard)) {
+        this.isBoardSelect = false
+        this.ui.markActiveCell(this.activeBoard, this.findEmptyCell())
+        this.ui.draw()
+      }
     } else {
-      const boardNum = point2Num(this.activeBoard)
-      const cellNum = point2Num(this.activeCell)
-      const gameState = await this.trpc.move.mutate({
-        playerId: playerInfo.id,
-        boardNum,
-        cellNum,
-      })
-      this.gameLoop2(gameState)
+      if (this.isValidCell(this.activeCell)) {
+        const boardNum = point2Num(this.activeBoard)
+        const cellNum = point2Num(this.activeCell)
+        const gameState = await this.trpc.move.mutate({
+          playerId: playerInfo.id,
+          boardNum,
+          cellNum,
+        })
+        this.gameLoop2(gameState)
+      }
     }
   }
 
-  private findeAvailableBoard(): Point {
+  private findAvailableBoard(): Point {
     if (this.gameState.boards[4].status === 'available') {
       return { y: 1, x: 1 }
     }
@@ -185,45 +190,28 @@ export class Game {
 
 const point2Num = (point: Point) => (point.y * 3 + point.x) as CellNum
 
-const checkLeft = (current: Point, isValid: (point: Point) => boolean): Point => {
+const checkLeft = (current: Point): Point => {
   const move = (p: Point): Point => ({ y: p.y, x: (p.x - 1) as GridNum })
-  return checkMove(current, isValid, (p) => p.x === 0, move)
+  return checkMove(current, (p) => p.x === 0, move)
 }
 
-const checkRight = (current: Point, isValid: (point: Point) => boolean): Point => {
+const checkRight = (current: Point): Point => {
   const move = (p: Point): Point => ({ y: p.y, x: (p.x + 1) as GridNum })
-  return checkMove(current, isValid, (p) => p.x === 2, move)
+  return checkMove(current, (p) => p.x === 2, move)
 }
 
-const checkUp = (current: Point, isValid: (point: Point) => boolean): Point => {
+const checkUp = (current: Point): Point => {
   const move = (p: Point): Point => ({ y: (p.y - 1) as GridNum, x: p.x })
-  return checkMove(current, isValid, (p) => p.y === 0, move)
+  return checkMove(current, (p) => p.y === 0, move)
 }
 
-const checkDown = (current: Point, isValid: (point: Point) => boolean): Point => {
+const checkDown = (current: Point): Point => {
   const move = (p: Point): Point => ({ y: (p.y + 1) as GridNum, x: p.x })
-  return checkMove(current, isValid, (p) => p.y === 2, move)
+  return checkMove(current, (p) => p.y === 2, move)
 }
 
 const checkMove = (
   current: Point,
-  isValid: (point: Point) => boolean,
   isEnd: (point: Point) => boolean,
   move: (point: Point) => Point,
-): Point => {
-  if (isEnd(current)) {
-    return current
-  }
-  const next1 = move(current)
-  if (isValid(next1)) {
-    return next1
-  }
-  if (isEnd(next1)) {
-    return current
-  }
-  const next2 = move(next1)
-  if (isValid(next2)) {
-    return next2
-  }
-  return current
-}
+): Point => (isEnd(current) ? current : move(current))
