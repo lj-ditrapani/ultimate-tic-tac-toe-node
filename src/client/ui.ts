@@ -73,6 +73,16 @@ export class Ui {
 
   drawBoard(board: Board, index: BoardNum) {
     const boardPoint = numToPoint(index)
+    if (board.status !== 'available') {
+      const tag = board.status === 'tie' ? 't' : board.status.toLowerCase()
+      const color =
+        board.status === 'tie'
+          ? colors.lightGrey
+          : board.status === 'X'
+          ? this.xC
+          : this.oC
+      this.setBoardStateTag(boardPoint, color, tag)
+    }
     board.cells.forEach((cell, index) => {
       const cellPoint = numToPoint(index as CellNum)
       this.drawCell(boardPoint, cellPoint, cell)
@@ -100,6 +110,11 @@ export class Ui {
     const point = boardCellToTgCoord(board, cellPoint)
     const color = mark === 'X' ? this.xC : this.oC
     this.tg.set(point.y, point.x, mark, color, this.boardBg)
+  }
+
+  setBoardStateTag(board: Point, color: number, tag: string) {
+    const p = pointToBoardStateTagTgCoord(board)
+    this.tg.set(p.y, p.x, tag, color, this.boarderC)
   }
 
   markActiveBoard(board: Point) {
@@ -200,8 +215,12 @@ const boardCellToTgCoord = (board: Point, cell: Point): TgCoord => ({
   y: zToTgCoord(board.y, cell.y),
   x: zToTgCoord(board.x, cell.x),
 })
-const pointToActiveBoardTgCoord = (board: Point): TgCoord => ({
+const pointToActiveBoardTgCoord = (board: Point): TgCoord =>
+  pointToBoardHeaderTgCoord(board, 3)
+const pointToBoardStateTagTgCoord = (board: Point): TgCoord =>
+  pointToBoardHeaderTgCoord(board, 2)
+const pointToBoardHeaderTgCoord = (board: Point, offset: 2 | 3): TgCoord => ({
   y: board.y * 6,
-  x: 3 + board.x * 6,
+  x: offset + board.x * 6,
 })
 const zToTgCoord = (board: GridNum, cell: GridNum): number => 1 + board * 6 + cell * 2
