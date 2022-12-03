@@ -117,6 +117,15 @@ export class Ui {
     this.tg.bg(p.y, p.x, this.activeC)
   }
 
+  drawActiveBoard(board: Point) {
+    this.markActiveBoard(board)
+    this.draw()
+  }
+  drawActiveCell(board: Point, cell: Point) {
+    this.markActiveCell(board, cell)
+    this.draw()
+  }
+
   done() {
     this.tg.reset()
     this.exit()

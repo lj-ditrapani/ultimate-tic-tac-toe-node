@@ -27,7 +27,7 @@ export class Game {
     this.gameLoop2(await this.trpc.status.query({}))
   }
 
-  readonly gameLoop2 = async (gameState: GameState) => {
+  private async gameLoop2(gameState: GameState) {
     this.gameState = gameState
     this.ui.drawGame(this.gameState)
     const state = this.gameState.state
@@ -87,45 +87,40 @@ export class Game {
   private moveLeft() {
     if (this.isBoardSelect) {
       this.activeBoard = checkLeft(this.activeBoard)
-      this.ui.markActiveBoard(this.activeBoard)
-      this.ui.draw()
+      this.ui.drawActiveBoard(this.activeBoard)
     } else {
       this.activeCell = checkLeft(this.activeCell)
-      this.ui.markActiveCell(this.activeBoard, this.activeCell)
-      this.ui.draw()
+      this.ui.drawActiveCell(this.activeBoard, this.activeCell)
     }
   }
+
   private moveRight() {
     if (this.isBoardSelect) {
       this.activeBoard = checkRight(this.activeBoard)
-      this.ui.markActiveBoard(this.activeBoard)
-      this.ui.draw()
+      this.ui.drawActiveBoard(this.activeBoard)
     } else {
       this.activeCell = checkRight(this.activeCell)
-      this.ui.markActiveCell(this.activeBoard, this.activeCell)
-      this.ui.draw()
+      this.ui.drawActiveCell(this.activeBoard, this.activeCell)
     }
   }
+
   private moveUp() {
     if (this.isBoardSelect) {
       this.activeBoard = checkUp(this.activeBoard)
-      this.ui.markActiveBoard(this.activeBoard)
-      this.ui.draw()
+      this.ui.drawActiveBoard(this.activeBoard)
     } else {
       this.activeCell = checkUp(this.activeCell)
-      this.ui.markActiveCell(this.activeBoard, this.activeCell)
-      this.ui.draw()
+      this.ui.drawActiveCell(this.activeBoard, this.activeCell)
     }
   }
+
   private moveDown() {
     if (this.isBoardSelect) {
       this.activeBoard = checkDown(this.activeBoard)
-      this.ui.markActiveBoard(this.activeBoard)
-      this.ui.draw()
+      this.ui.drawActiveBoard(this.activeBoard)
     } else {
       this.activeCell = checkDown(this.activeCell)
-      this.ui.markActiveCell(this.activeBoard, this.activeCell)
-      this.ui.draw()
+      this.ui.drawActiveCell(this.activeBoard, this.activeCell)
     }
   }
 
@@ -160,10 +155,7 @@ export class Game {
     return gridFind((y, x) => {
       const point = { y, x }
       const board = this.gameState.boards[point2Num(point)]
-      if (board.status === 'available') {
-        return point
-      }
-      return undefined
+      return board.status === 'available' ? point : undefined
     })
   }
 
@@ -175,10 +167,7 @@ export class Game {
     return gridFind((y, x) => {
       const point = { y, x }
       const cell = board.cells[point2Num(point)]
-      if (cell === 'E') {
-        return point
-      }
-      return undefined
+      return cell === 'E' ? point : undefined
     })
   }
 
@@ -191,28 +180,11 @@ export class Game {
 
 const point2Num = (point: Point) => (point.y * 3 + point.x) as CellNum
 
-const checkLeft = (current: Point): Point => {
-  const move = (p: Point): Point => ({ y: p.y, x: (p.x - 1) as GridNum })
-  return checkMove(current, (p) => p.x === 0, move)
-}
+const checkLeft = (p: Point): Point => ({ y: p.y, x: subFromGridNum(p.x) })
+const checkRight = (p: Point): Point => ({ y: p.y, x: addToGridNum(p.x) })
+const checkUp = (p: Point): Point => ({ y: subFromGridNum(p.y), x: p.x })
+const checkDown = (p: Point): Point => ({ y: addToGridNum(p.y), x: p.x })
 
-const checkRight = (current: Point): Point => {
-  const move = (p: Point): Point => ({ y: p.y, x: (p.x + 1) as GridNum })
-  return checkMove(current, (p) => p.x === 2, move)
-}
-
-const checkUp = (current: Point): Point => {
-  const move = (p: Point): Point => ({ y: (p.y - 1) as GridNum, x: p.x })
-  return checkMove(current, (p) => p.y === 0, move)
-}
-
-const checkDown = (current: Point): Point => {
-  const move = (p: Point): Point => ({ y: (p.y + 1) as GridNum, x: p.x })
-  return checkMove(current, (p) => p.y === 2, move)
-}
-
-const checkMove = (
-  current: Point,
-  isEnd: (point: Point) => boolean,
-  move: (point: Point) => Point,
-): Point => (isEnd(current) ? current : move(current))
+const addToGridNum = (num: GridNum): GridNum => (num === 2 ? num : ((num + 1) as GridNum))
+const subFromGridNum = (num: GridNum): GridNum =>
+  num === 0 ? num : ((num - 1) as GridNum)
