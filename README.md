@@ -17,6 +17,14 @@ Docker
     host=localhost sh docker-run-client.sh
 
 
+UI Controls
+-----------
+
+On your turn:
+- Arrow keys to move around.
+- Enter to select.
+
+
 Develop
 -------
 
