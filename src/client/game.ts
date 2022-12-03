@@ -84,6 +84,10 @@ export class Game {
 
   private moveLeft() {
     if (this.isBoardSelect) {
+      const previousBoard = this.activeBoard
+      this.activeBoard = { y: this.activeBoard.y, x: (this.activeBoard.x - 1) as 0 }
+      this.ui.markActiveBoard(previousBoard, this.activeBoard)
+      this.ui.draw()
     } else {
     }
   }
@@ -105,6 +109,8 @@ export class Game {
   private async select(playerInfo: { actor: 'p1' | 'p2'; id: number }) {
     if (this.isBoardSelect) {
       this.isBoardSelect = false
+      this.ui.markActiveCell(this.activeBoard, { y: 1, x: 1 })
+      this.ui.draw()
     } else {
       const boardNum = point2Num(this.activeBoard)
       const cellNum = point2Num(this.activeCell)
