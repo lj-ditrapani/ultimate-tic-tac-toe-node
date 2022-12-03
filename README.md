@@ -1,12 +1,12 @@
 Ultimate Tic-tac-toe Server
 ===========================
 
-Work in progress.
-
 LAN multiplayer Ultimate tic-tac-toe server in typescript on node.
 
 - Client: node cli app
 - Server: node express
+
+[Game Rules](https://mathwithbaddrawings.com/2013/06/16/ultimate-tic-tac-toe/)
 
 
 Docker
@@ -22,7 +22,7 @@ Develop
 
 ### Setup ###
 
-Install node with [https://github.com/nvm-sh/nvm](nvm).
+Install node with [nvm](https://github.com/nvm-sh/nvm).
 
     nvm install     # one-time install
     nvm use         # each time you enter the project directory
@@ -36,7 +36,7 @@ Install npm packages.
 
 The server does not need config, but the client does.
 You need to set the `host` environment variable to the host name or ip address of the server.
-You can use the .env [https://www.npmjs.com/package/dotenv](dotenv) file to set it.
+You can use the .env [dotenv](https://www.npmjs.com/package/dotenv) file to set it.
 
 
 ### Run ###
