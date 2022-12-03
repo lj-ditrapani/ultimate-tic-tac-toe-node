@@ -1,6 +1,6 @@
 import { repeat } from 'ramda'
 import { blockElements, colors, ITermGrid, makeTermGrid } from 'term-grid-ui'
-import type { Board, BoardNum, CellNum, GameState, PlayerInfo } from '../models'
+import type { Board, BoardNum, Cell, CellNum, GameState, PlayerInfo } from '../models'
 import { gridEffect, GridNum, numToPoint, Point } from './helpers.js'
 
 const height = 24
@@ -16,10 +16,10 @@ export class Ui {
   private readonly boardBg = colors.paleTurquoise
   private readonly textBg = colors.lightGrey
   private readonly textC = colors.black
-  private readonly boarder = colors.darkCyan
-  private readonly active = colors.orange
+  private readonly boarderC = colors.darkCyan
+  private readonly activeC = colors.orange
   private readonly xC = colors.darkBlue
-  private readonly oC = colors.darkGreen
+  private readonly oC = colors.orange
 
   constructor(private readonly tg: ITermGrid, private readonly exit: () => never) {}
 
@@ -54,7 +54,7 @@ export class Ui {
     this.drawVBoarder(18)
     gridEffect((y, x) => {
       const p = pointToActiveBoardTgCoord({ y, x })
-      this.tg.set(p.y, p.x, blockElements.lower12Block, this.boarder, this.boarder)
+      this.tg.set(p.y, p.x, blockElements.lower12Block, this.boarderC, this.boarderC)
     })
     this.tg.draw()
   }
@@ -64,6 +64,7 @@ export class Ui {
   }
 
   drawGame(gameState: GameState) {
+    this.removeActiveBoard()
     gameState.boards.forEach((board, index) => {
       this.drawBoard(board, index as BoardNum)
     })
@@ -72,10 +73,8 @@ export class Ui {
   drawBoard(board: Board, index: BoardNum) {
     const boardPoint = numToPoint(index)
     board.cells.forEach((cell, index) => {
-      if (cell !== 'E') {
-        const cellPoint = numToPoint(index as CellNum)
-        this.markCell(boardPoint, cellPoint, cell)
-      }
+      const cellPoint = numToPoint(index as CellNum)
+      this.drawCell(boardPoint, cellPoint, cell)
     })
   }
 
@@ -89,10 +88,24 @@ export class Ui {
     this.tg.text(20, 1, message, this.textC, this.textBg)
   }
 
-  markCell(board: Point, cell: Point, mark: 'X' | 'O') {
-    const point = boardCellToTgCoord(board, cell)
+  drawCell(board: Point, cellPoint: Point, cellState: Cell) {
+    const mark = cellState === 'E' ? ' ' : cellState
+    const point = boardCellToTgCoord(board, cellPoint)
     const color = mark === 'X' ? this.xC : this.oC
     this.tg.set(point.y, point.x, mark, color, this.boardBg)
+  }
+
+  private removeActiveBoard() {
+    gridEffect((y, x) => {
+      const p = pointToActiveBoardTgCoord({ y, x })
+      this.tg.fg(p.y, p.x, this.boarderC)
+    })
+  }
+
+  markActiveBoard(board: Point) {
+    this.removeActiveBoard()
+    const p = pointToActiveBoardTgCoord(board)
+    this.tg.fg(p.y, p.x, this.activeC)
   }
 
   markActiveCell(board: Point, cell: Point) {
@@ -101,16 +114,7 @@ export class Ui {
       this.tg.bg(p.y, p.x, this.boardBg)
     })
     const p = boardCellToTgCoord(board, cell)
-    this.tg.bg(p.y, p.x, this.active)
-  }
-
-  markActiveBoard(board: Point) {
-    gridEffect((y, x) => {
-      const p = pointToActiveBoardTgCoord({ y, x })
-      this.tg.fg(p.y, p.x, this.boarder)
-    })
-    const p = pointToActiveBoardTgCoord(board)
-    this.tg.fg(p.y, p.x, this.active)
+    this.tg.bg(p.y, p.x, this.activeC)
   }
 
   done() {
@@ -120,13 +124,13 @@ export class Ui {
 
   private drawHBoarder(y: number) {
     for (const x of [...Array(width).keys()]) {
-      this.tg.set(y, x, ' ', this.textC, this.boarder)
+      this.tg.set(y, x, ' ', this.textC, this.boarderC)
     }
   }
 
   private drawVBoarder(x: number) {
     for (const y of [...Array(width).keys()]) {
-      this.tg.set(y, x, ' ', this.textC, this.boarder)
+      this.tg.set(y, x, ' ', this.textC, this.boarderC)
     }
   }
 
