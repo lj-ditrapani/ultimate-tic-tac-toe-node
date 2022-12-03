@@ -18,6 +18,7 @@ export class Ui {
   private readonly textC = colors.black
   private readonly boarderC = colors.darkCyan
   private readonly activeC = colors.yellow
+  private readonly pendingC = colors.darkRed
   private readonly xC = colors.purple
   private readonly oC = colors.orange
 
@@ -101,13 +102,6 @@ export class Ui {
     this.tg.set(point.y, point.x, mark, color, this.boardBg)
   }
 
-  private removeActiveBoard() {
-    gridEffect((y, x) => {
-      const p = pointToActiveBoardTgCoord({ y, x })
-      this.tg.fg(p.y, p.x, this.boarderC)
-    })
-  }
-
   markActiveBoard(board: Point) {
     this.removeActiveBoard()
     const p = pointToActiveBoardTgCoord(board)
@@ -127,14 +121,28 @@ export class Ui {
     this.markActiveBoard(board)
     this.draw()
   }
+
   drawActiveCell(board: Point, cell: Point) {
     this.markActiveCell(board, cell)
     this.draw()
   }
 
+  drawPendingCell(board: Point, cell: Point) {
+    const p = boardCellToTgCoord(board, cell)
+    this.tg.bg(p.y, p.x, this.pendingC)
+    this.tg.draw()
+  }
+
   done() {
     this.tg.reset()
     this.exit()
+  }
+
+  private removeActiveBoard() {
+    gridEffect((y, x) => {
+      const p = pointToActiveBoardTgCoord({ y, x })
+      this.tg.fg(p.y, p.x, this.boarderC)
+    })
   }
 
   private drawHBoarder(y: number) {

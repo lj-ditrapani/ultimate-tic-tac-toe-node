@@ -11,6 +11,7 @@ export class Game {
   private isBoardSelect = false
   private activeBoard: Point = { y: 1, x: 1 }
   private activeCell: Point = { y: 1, x: 1 }
+  private pending = false
 
   constructor(private readonly ui: Ui, private readonly trpc: typeof trpcClient) {
     ui.setOnInputHandler(this.onInput)
@@ -65,7 +66,7 @@ export class Game {
       this.ui.done()
     }
     const state = this.gameState.state
-    if (state.name !== 'turn' || state.player !== this.playerInfo.actor) {
+    if (this.pending || state.name !== 'turn' || state.player !== this.playerInfo.actor) {
       this.ui.writeMessage(`input: ${data}`)
       this.ui.draw()
       return
@@ -133,11 +134,14 @@ export class Game {
       }
     } else {
       if (this.isValidCell(this.activeCell)) {
+        this.ui.drawPendingCell(this.activeBoard, this.activeCell)
+        this.pending = true
         const gameState = await this.trpc.move.mutate({
           playerId: playerInfo.id,
           boardNum: point2Num(this.activeBoard),
           cellNum: point2Num(this.activeCell),
         })
+        this.pending = false
         this.gameLoop2(gameState)
       }
     }

@@ -4,7 +4,7 @@ Ultimate Tic-tac-toe Server
 LAN multiplayer Ultimate tic-tac-toe server in typescript on node.
 
 - Client: node cli app
-- Server: node express
+- Server: node tRPC
 
 [Game Rules](https://mathwithbaddrawings.com/2013/06/16/ultimate-tic-tac-toe/)
 
