@@ -1,10 +1,10 @@
-Ultimate Tic-tac-toe Server
-===========================
+Ultimate Tic-tac-toe
+====================
 
-LAN multiplayer Ultimate tic-tac-toe server in typescript on node.
+LAN multiplayer Ultimate tic-tac-toe client/server in typescript on node.
 
-- Client: node cli app
-- Server: node tRPC
+- Client: node [term-grid-ui](https://www.npmjs.com/package/term-grid-ui)
+- Server: node [tRPC](https://trpc.io/)
 
 [Game Rules](https://mathwithbaddrawings.com/2013/06/16/ultimate-tic-tac-toe/)
 
