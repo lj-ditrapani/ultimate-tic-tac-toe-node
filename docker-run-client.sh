@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-docker run --rm \
+docker run -it --rm \
     --network=host \
     -e host=$host \
-    uttt $1
+    uttt client

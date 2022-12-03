@@ -13,8 +13,8 @@ Docker
 ------
 
     sh docker-build.sh
-    sh docker-run.sh server
-    host=localhost sh docker-run.sh client
+    sh docker-run-server.sh
+    host=localhost sh docker-run-client.sh
 
 
 Develop
