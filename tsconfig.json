@@ -1,8 +1,6 @@
 {
   "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
   "compilerOptions": {
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "removeComments": true,
     "sourceMap": true,
     "outDir": "dist",
