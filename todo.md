@@ -1,3 +1,6 @@
+server:
+- add board select validation.  If activeBoard === 'all', client picks the board.  The board state of chosen board must be 'available', otherwise throw.
+
 Refactor drawBackground
 - let drawGame do some of the work
 - drawBackground doesn't call draw
